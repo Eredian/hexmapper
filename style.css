@@ -1,0 +1,551 @@
+body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+div {
+
+}
+
+#hexmap {
+	white-space: nowrap;
+    margin-top: 30px;
+    padding-right: 405px;
+    width: auto;
+    display: table;
+}
+
+#selectorList {
+	position: fixed;
+	top: 0;
+	right: 0;
+	width: 400px;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	background-color: rgb(200,200,200);
+	backface-visibility: hidden;
+}
+
+#selectedInfo {
+	position: fixed;
+	backface-visibility: hidden;
+	top: 10px;
+	left: 0px;
+	right: 400px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: grey;
+	z-index: 100;
+}
+
+.oddhexrow {
+	padding-left: 34px;
+	display: inline-block;
+    display: table;
+}
+
+.evenhexrow {
+	margin-bottom: -25px;
+	margin-top: -25px;
+    display: table;
+}
+
+
+.hexcell {
+	width: 68px;
+	height: 76px;
+	display: inline-block;
+}
+
+textarea {
+    resize: none;
+}
+
+/*there be dragons*/
+.hexcell.hexagon {
+	background-image: url(images/perfectHex.png);
+	background-repeat: no-repeat;
+	overflow: visible;
+	position: absolute;
+    z-index: 10;
+    pointer-events:none;
+}
+.hexcell.display {
+	background-repeat: no-repeat;
+	background-position: center center;
+	overflow: hidden;
+	-webkit-clip-path: polygon(34px 1px, 67px 20px, 67px 56px, 34px 75px, 1px 56px, 1px 19px);
+}
+
+
+#selectorList {
+    z-index: 100;
+}
+
+#selectorList li {
+	display: inline-block;
+	width: 50px;
+	height: 50px;
+}
+
+.cavernGroundColor {
+    background-color: rgb(180, 180, 180);
+}
+.nothingColor {
+    background-color: black;
+}
+.murkyWaterColor {
+    background-color: rgb(25,25,170);
+}   
+
+.swampRiverColor {
+    background-color: rgb(45, 75, 200);
+}
+
+
+.nothing {
+
+}
+.anchor {
+  background-image: url(hexes/anchor.png);
+}
+.badlands {
+  background-image: url(hexes/badlands.png);
+}
+.battle {
+  background-image: url(hexes/battle.png);
+}
+.battleprimitive {
+  background-image: url(hexes/battleprimitive.png);
+}
+.beach {
+  background-image: url(hexes/beach.png);
+}
+.bear {
+  background-image: url(hexes/bear.png);
+}
+.bear_color {
+  background-image: url(hexes/bear_color.png);
+}
+.bison {
+  background-image: url(hexes/bison.png);
+}
+.bridge {
+  background-image: url(hexes/bridge.png);
+}
+.brokenlands {
+  background-image: url(hexes/brokenlands.png);
+}
+.brontosaurus {
+  background-image: url(hexes/brontosaurus.png);
+}
+.cactus {
+  background-image: url(hexes/cactus.png);
+}
+.camel {
+  background-image: url(hexes/camel.png);
+}
+.camp {
+  background-image: url(hexes/camp.png);
+}
+.capital {
+  background-image: url(hexes/capital.png);
+}
+.castle {
+  background-image: url(hexes/castle.png);
+}
+.catapult {
+  background-image: url(hexes/catapult.png);
+}
+.cathedral {
+  background-image: url(hexes/cathedral.png);
+}
+.cattle {
+  background-image: url(hexes/cattle.png);
+}
+.cave {
+  background-image: url(hexes/cave.png);
+}
+.church {
+  background-image: url(hexes/church.png);
+}
+.city {
+  background-image: url(hexes/city.png);
+}
+.clanmoot {
+  background-image: url(hexes/clanmoot.png);
+}
+.crater {
+  background-image: url(hexes/crater.png);
+}
+.crossbones {
+  background-image: url(hexes/crossbones.png);
+}
+.cultivatedfarmland {
+  background-image: url(hexes/cultivatedfarmland.png);
+}
+.deadforest {
+  background-image: url(hexes/deadforest.png);
+}
+.deadforesthills {
+  background-image: url(hexes/deadforesthills.png);
+}
+.deadforestmountain {
+  background-image: url(hexes/deadforestmountain.png);
+}
+.deadforestmountains {
+  background-image: url(hexes/deadforestmountains.png);
+}
+.deadforestwetlands {
+  background-image: url(hexes/deadforestwetlands.png);
+}
+.dragon {
+  background-image: url(hexes/dragon.png);
+}
+.dunes {
+  background-image: url(hexes/dunes.png);
+}
+.dungeon {
+  background-image: url(hexes/dungeon.png);
+}
+.elephant {
+  background-image: url(hexes/elephant.png);
+}
+.evergreen {
+  background-image: url(hexes/evergreen.png);
+}
+.evergreenhills {
+  background-image: url(hexes/evergreenhills.png);
+}
+.evergreenmountain {
+  background-image: url(hexes/evergreenmountain.png);
+}
+.evergreenmountains {
+  background-image: url(hexes/evergreenmountains.png);
+}
+.evergreenwetlands {
+  background-image: url(hexes/evergreenwetlands.png);
+}
+.forestedhills {
+  background-image: url(hexes/forestedhills.png);
+}
+.forestedmountain {
+  background-image: url(hexes/forestedmountain.png);
+}
+.forestedmountains {
+  background-image: url(hexes/forestedmountains.png);
+}
+.forestpetrified {
+  background-image: url(hexes/forestpetrified.png);
+}
+.forestwetlands {
+  background-image: url(hexes/forestwetlands.png);
+}
+.fort {
+  background-image: url(hexes/fort.png);
+}
+.fruit {
+  background-image: url(hexes/fruit.png);
+}
+.fruitheavy {
+  background-image: url(hexes/fruitheavy.png);
+}
+.fruithills {
+  background-image: url(hexes/fruithills.png);
+}
+.fruitlight {
+  background-image: url(hexes/fruitlight.png);
+}
+.fungalforest {
+  background-image: url(hexes/fungalforest.png);
+}
+.fungalforestheavy {
+  background-image: url(hexes/fungalforestheavy.png);
+}
+.geyser {
+  background-image: url(hexes/geyser.png);
+}
+.glacier {
+  background-image: url(hexes/glacier.png);
+}
+.grassland {
+  background-image: url(hexes/grassland.png);
+}
+.grasslandhills {
+  background-image: url(hexes/grasslandhills.png);
+}
+.grasslandpoor {
+  background-image: url(hexes/grasslandpoor.png);
+}
+.grassyhills {
+  background-image: url(hexes/grassyhills.png);
+}
+.heavycactus {
+  background-image: url(hexes/heavycactus.png);
+}
+.heavyevergreen {
+  background-image: url(hexes/heavyevergreen.png);
+}
+.heavyforest {
+  background-image: url(hexes/heavyforest.png);
+}
+.heavyforestpetrified {
+  background-image: url(hexes/heavyforestpetrified.png);
+}
+.hills {
+  background-image: url(hexes/hills.png);
+}
+.horse {
+  background-image: url(hexes/horse.png);
+}
+.jungle {
+  background-image: url(hexes/jungle.png);
+}
+.junglehills {
+  background-image: url(hexes/junglehills.png);
+}
+.junglelight {
+  background-image: url(hexes/junglelight.png);
+}
+.junglemountain {
+  background-image: url(hexes/junglemountain.png);
+}
+.junglemountains {
+  background-image: url(hexes/junglemountains.png);
+}
+.junglewetlands {
+  background-image: url(hexes/junglewetlands.png);
+}
+.kelpforest {
+  background-image: url(hexes/kelpforest.png);
+}
+.kelpforestheavy {
+  background-image: url(hexes/kelpforestheavy.png);
+}
+.knight {
+  background-image: url(hexes/knight.png);
+}
+.landmark {
+  background-image: url(hexes/landmark.png);
+}
+.lava {
+  background-image: url(hexes/lava.png);
+}
+.lightforest {
+  background-image: url(hexes/lightforest.png);
+}
+.lighthouse {
+  background-image: url(hexes/lighthouse.png);
+}
+.lion {
+  background-image: url(hexes/lion.png);
+}
+.logo {
+  background-image: url(hexes/logo.png);
+}
+.marsh {
+  background-image: url(hexes/marsh.png);
+}
+.massimport {
+  background-image: url(hexes/massimport.png);
+}
+.mines {
+  background-image: url(hexes/mines.png);
+}
+.mixedforest {
+  background-image: url(hexes/mixedforest.png);
+}
+.mixedforestheavy {
+  background-image: url(hexes/mixedforestheavy.png);
+}
+.mixedforesthills {
+  background-image: url(hexes/mixedforesthills.png);
+}
+.mixedforestmountain {
+  background-image: url(hexes/mixedforestmountain.png);
+}
+.mixedforestmountains {
+  background-image: url(hexes/mixedforestmountains.png);
+}
+.moderncapital {
+  background-image: url(hexes/moderncapital.png);
+}
+.moderncity {
+  background-image: url(hexes/moderncity.png);
+}
+.monolith {
+  background-image: url(hexes/monolith.png);
+}
+.monsterlair {
+  background-image: url(hexes/monsterlair.png);
+}
+.monument {
+  background-image: url(hexes/monument.png);
+}
+.moor {
+  background-image: url(hexes/moor.png);
+}
+.moss {
+  background-image: url(hexes/moss.png);
+}
+.mountain {
+  background-image: url(hexes/mountain.png);
+}
+.mountains {
+  background-image: url(hexes/mountains.png);
+}
+.mud {
+  background-image: url(hexes/mud.png);
+}
+.oasis {
+  background-image: url(hexes/oasis.png);
+}
+.oilwell {
+  background-image: url(hexes/oilwell.png);
+}
+.palace {
+  background-image: url(hexes/palace.png);
+}
+.perspective_cathedral {
+  background-image: url(hexes/perspective_cathedral.png);
+}
+.perspective_city {
+  background-image: url(hexes/perspective_city.png);
+}
+.perspective_fortress {
+  background-image: url(hexes/perspective_fortress.png);
+}
+.perspective_roundtower {
+  background-image: url(hexes/perspective_roundtower.png);
+}
+.perspective_ruins {
+  background-image: url(hexes/perspective_ruins.png);
+}
+.perspective_village {
+  background-image: url(hexes/perspective_village.png);
+}
+.plant {
+  background-image: url(hexes/plant.png);
+}
+.pointofinterest {
+  background-image: url(hexes/pointofinterest.png);
+}
+.port {
+  background-image: url(hexes/port.png);
+}
+.pyramid {
+  background-image: url(hexes/pyramid.png);
+}
+.reefs {
+  background-image: url(hexes/reefs.png);
+}
+.rockydesert {
+  background-image: url(hexes/rockydesert.png);
+}
+.ruinedcity {
+  background-image: url(hexes/ruinedcity.png);
+}
+.ruins {
+  background-image: url(hexes/ruins.png);
+}
+.sailship {
+  background-image: url(hexes/sailship.png);
+}
+.sandydesert {
+  background-image: url(hexes/sandydesert.png);
+}
+.savanna {
+  background-image: url(hexes/savanna.png);
+}
+.seagrass {
+  background-image: url(hexes/seagrass.png);
+}
+.sheep {
+  background-image: url(hexes/sheep.png);
+}
+.shellfish {
+  background-image: url(hexes/shellfish.png);
+}
+.shipwreck {
+  background-image: url(hexes/shipwreck.png);
+}
+.shrine {
+  background-image: url(hexes/shrine.png);
+}
+.shrubland {
+  background-image: url(hexes/shrubland.png);
+}
+.shrublandhills {
+  background-image: url(hexes/shrublandhills.png);
+}
+.skullcrossbones {
+  background-image: url(hexes/skullcrossbones.png);
+}
+.snowcappedmountain {
+  background-image: url(hexes/snowcappedmountain.png);
+}
+.snowcappedmountains {
+  background-image: url(hexes/snowcappedmountains.png);
+}
+.snowfields {
+  background-image: url(hexes/snowfields.png);
+}
+.stalagmites {
+  background-image: url(hexes/stalagmites.png);
+}
+.statue {
+  background-image: url(hexes/statue.png);
+}
+.swamp {
+  background-image: url(hexes/swamp.png);
+}
+.teepee {
+  background-image: url(hexes/teepee.png);
+}
+.temple {
+  background-image: url(hexes/temple.png);
+}
+.tombstone {
+  background-image: url(hexes/tombstone.png);
+}
+.totem {
+  background-image: url(hexes/totem.png);
+}
+.tower {
+  background-image: url(hexes/tower.png);
+}
+.town {
+  background-image: url(hexes/town.png);
+}
+.trap {
+  background-image: url(hexes/trap.png);
+}
+.village {
+  background-image: url(hexes/village.png);
+}
+.volcano {
+  background-image: url(hexes/volcano.png);
+}
+.volcanodormant {
+  background-image: url(hexes/volcanodormant.png);
+}
+.waystation {
+  background-image: url(hexes/waystation.png);
+}
+.whaling {
+  background-image: url(hexes/whaling.png);
+}
+.whirlpool {
+  background-image: url(hexes/whirlpool.png);
+}
+.windmill {
+  background-image: url(hexes/windmill.png);
+}
+.x {
+  background-image: url(hexes/x.png);
+}
