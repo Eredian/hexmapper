@@ -18,10 +18,10 @@ require_once("generateCSS.php");
 			outputhtml();
 		}
         ?>
-        <li onclick="save()" style="cursor: pointer;">Save</li>
-        <li onclick="load()" style="cursor: pointer;">Load</li>
-        <li onclick="exportMap()" style="cursor: pointer;">Export</li>
-        <li onclick="importMap()" style="cursor: pointer;">Import</li>
+        <li onclick="map.save()" style="cursor: pointer;">Save</li>
+        <li onclick="map.load()" style="cursor: pointer;">Load</li>
+        <li onclick="map.exportMap()" style="cursor: pointer;">Export</li>
+        <li onclick="map.importMap()" style="cursor: pointer;">Import</li>
         <li><textarea id="mapData" rows="2" cols="2"></textarea></li>
     </ul>
 </body>

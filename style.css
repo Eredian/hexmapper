@@ -89,6 +89,7 @@ textarea {
 	background-position: center center;
 	overflow: hidden;
 	-webkit-clip-path: polygon(34px 1px, 67px 20px, 67px 56px, 34px 75px, 1px 56px, 1px 19px);
+    clip-path: polygon(34px 1px, 67px 20px, 67px 56px, 34px 75px, 1px 56px, 1px 19px);
 }
 
 

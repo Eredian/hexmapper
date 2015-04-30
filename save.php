@@ -12,6 +12,4 @@ if (isset($_GET['filename']) && isset($_POST['data']))
 } else {
 	echo "missing data or filename";
 }
-
-
 ?>
