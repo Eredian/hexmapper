@@ -23,6 +23,7 @@ function outputhtml() {
   echo "<li onClick='selectHex(\"nothing\", \"cavernGroundColor\")'></li>";
   echo "<li onClick='selectHex(\"nothing\", \"murkyWaterColor\")'class='nothing murkyWaterColor'></li>";
   echo "<li onClick='selectHex(\"nothing\", \"swampRiverColor\")'class='nothing swampRiverColor'></li>";
+  echo "<li onClick='selectHex(\"nothing\", \"lavaColor\")'class='nothing lavaColor'></li>";
   echo "<li onClick='selectHex(\"nothing\", \"nothingColor\")' class='nothing nothingColor'></li>";
 }
 

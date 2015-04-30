@@ -7,9 +7,6 @@ body {
     user-select: none;
 }
 
-div {
-
-}
 
 #hexmap {
 	white-space: nowrap;
@@ -75,6 +72,18 @@ textarea {
     z-index: 10;
     pointer-events:none;
 }
+.hexcell.hidden {
+	background-image: url(images/hidden.png);
+	position: absolute;
+    z-index: 5;
+    pointer-events:none;
+}
+.hexcell.explored {
+	position: absolute;
+    z-index: 5;
+    pointer-events:none;
+}
+
 .hexcell.display {
 	background-repeat: no-repeat;
 	background-position: center center;
@@ -107,10 +116,10 @@ textarea {
     background-color: rgb(45, 75, 200);
 }
 
-
-.nothing {
-
+.lavaColor {
+    background-color: rgb(255, 55, 20);
 }
+
 .anchor {
   background-image: url(hexes/anchor.png);
 }

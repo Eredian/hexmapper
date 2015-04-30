@@ -14,7 +14,9 @@ require_once("generateCSS.php");
 	<div id="hexmap">test</div>
     <ul id="selectorList">
         <?php
-        outputhtml();
+		if($_GET['mode'] == 'edit') {
+			outputhtml();
+		}
         ?>
         <li onclick="save()" style="cursor: pointer;">Save</li>
         <li onclick="load()" style="cursor: pointer;">Load</li>
