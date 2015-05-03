@@ -1,0 +1,114 @@
+body {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-color: black;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+}
+
+canvas {
+    border: 1px solid black;
+}
+
+
+#hexmap {
+	white-space: nowrap;
+    margin-top: 30px;
+    padding-right: 405px;
+    width: auto;
+    display: table;
+}
+
+#selectorList {
+	position: fixed;
+	top: 0;
+	right: 0;
+	list-style-type: none;
+	margin: 0;
+	padding: 0;
+	background-color: rgb(200,200,200);
+	backface-visibility: hidden;
+    font-size: 40px;
+    z-index: 100;
+}
+
+#selectorList li {
+    margin : 5px;
+}
+
+#selectorList textarea {
+    width: 35px;
+    height: 35px;
+}
+
+#selectedInfo {
+	position: fixed;
+	backface-visibility: hidden;
+	top: 10px;
+	left: 0px;
+	right: 400px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: grey;
+	z-index: 100;
+}
+
+.oddhexrow {
+	padding-left: 34px;
+	display: inline-block;
+    display: table;
+}
+
+.evenhexrow {
+	margin-bottom: -25px;
+	margin-top: -25px;
+    display: table;
+}
+
+
+.hexcell {
+	width: 68px;
+	height: 76px;
+	display: inline-block;
+}
+
+textarea {
+    resize: none;
+}
+
+/*there be dragons*/
+.hexcell.hexagon {
+	background-image: url(../images/perfectHex.png);
+	background-repeat: no-repeat;
+	overflow: visible;
+	position: absolute;
+    z-index: 10;
+    pointer-events:none;
+}
+.hexcell.hidden {
+	background-image: url(../images/hidden.png);
+	position: absolute;
+    z-index: 5;
+    pointer-events:none;
+}
+.hexcell.explored {
+	position: absolute;
+    z-index: 5;
+    pointer-events:none;
+}
+
+.hexcell.display {
+	background-repeat: no-repeat;
+	background-position: center center;
+	overflow: hidden;
+	-webkit-clip-path: polygon(34px 1px, 67px 20px, 67px 56px, 34px 75px, 1px 56px, 1px 19px);
+    clip-path: polygon(34px 1px, 67px 20px, 67px 56px, 34px 75px, 1px 56px, 1px 19px);
+}
+

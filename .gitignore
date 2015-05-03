@@ -188,4 +188,6 @@ UpgradeLog*.htm
 FakesAssemblies/
 
 Thumbs.db
-maps
+maps*
+tsconfig.json
+tasks.json
