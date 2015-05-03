@@ -257,62 +257,8 @@ class HexMap {
     
         var parent = this;
         xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                /*
-                var squareArray = JSON.parse(xmlhttp.responseText);
-                squareArray = transpose(squareArray);
-                parent.mapArray = {};
-                for (var column in squareArray) {
-                    column = parseInt(column);
-                    var x = column; 
-                    var y = -1;
-                    for (var row in squareArray[column]) {
-                        row = parseInt(row);
-                        var tile = squareArray[column][row];
-                        if ((row+1) % 2 == 0) {
-                            y++;
-                        } else {
-                            y++;
-                            x--;
-                        }
-                        if (parent.mapArray[x] == null) {
-                            parent.mapArray[x] = {};
-                        }
-                        parent.mapArray[x][y] = tile;
-                    }
-                }
-                */
-                
+            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {                
                 parent.mapTiles.tiles = JSON.parse(xmlhttp.responseText);
-                /*
-                parent.mapTiles = new HexMapTiles();
-                for (var key1 in mapTiles) {
-                    if (mapTiles.hasOwnProperty(key1)) {
-                        for (var key2 in mapTiles[key1]) {
-                            if (mapTiles[key1].hasOwnProperty(key2)) {
-                                var tile = mapTiles[key1][key2];
-                                var realTile = new HexTile();
-                                realTile.image = tile["tile"];
-                                if(tile["color"] == "nothingColor") {
-                                    realTile.color = TileColor.NOTHING;
-                                } else if(tile["color"] == "murkyWaterColor") {
-                                    realTile.color = TileColor.MURKY_WATER;
-                                } else if(tile["color"] == "cavernGroundColor") {
-                                    realTile.color = TileColor.CAVERN_GROUND;
-                                } else if(tile["color"] == "lavaColor") {
-                                    realTile.color = TileColor.LAVA;
-                                } else if(tile["color"] == "swampRiverColor") {
-                                    realTile.color = TileColor.SWAMP_RIVER;
-                                }
-                                
-                                realTile.explored = tile["explored"];
-                                realTile.x = parseInt(key1);
-                                realTile.y = parseInt(key2);
-                                parent.mapTiles.add(key1, key2, realTile);
-                            }
-                        }
-                    }
-                }*/
                 parent.deleteMap();
                 parent.drawMap();
             }
@@ -410,46 +356,3 @@ window.onload = function () {
     document.getElementById("mapLoadButton").addEventListener("click", () => map.load());
 };
 
-
-
-
-
-
-
-
-
-
-/*
-function transpose(a) {
-
-  // Calculate the width and height of the Array
-  var w = a.length ? a.length : 0,
-    h = a[0] instanceof Array ? a[0].length : 0;
-
-  // In case it is a zero matrix, no transpose routine needed.
-  if(h === 0 || w === 0) { return []; }
-*/
-  /**
-   * @var {Number} i Counter
-   * @var {Number} j Counter
-   * @var {Array} t Transposed data is stored in this array.
-   *//*
-  var i, j, t = [];
-
-  // Loop through every item in the outer array (height)
-  for(i=0; i<h; i++) {
-
-    // Insert a new row (array)
-    t[i] = [];
-
-    // Loop through every item per item in outer array (width)
-    for(j=0; j<w; j++) {
-
-      // Save transposed data.
-      t[i][j] = a[j][i];
-    }
-  }
-
-  return t;
-};
-*/
