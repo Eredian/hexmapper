@@ -13,21 +13,8 @@ body {
     padding: 0;
 }
 
-canvas {
-    border: 1px solid black;
-}
-
-
-#hexmap {
-	white-space: nowrap;
-    margin-top: 30px;
-    padding-right: 405px;
-    width: auto;
-    display: table;
-}
-
 #selectorList {
-	position: fixed;
+	position: absolute;
 	top: 0;
 	right: 0;
 	list-style-type: none;
@@ -36,7 +23,7 @@ canvas {
 	background-color: rgb(200,200,200);
 	backface-visibility: hidden;
     font-size: 40px;
-    z-index: 100;
+    pointer-events: all;
 }
 
 #selectorList li {
@@ -48,67 +35,51 @@ canvas {
     height: 35px;
 }
 
-#selectedInfo {
-	position: fixed;
-	backface-visibility: hidden;
-	top: 10px;
-	left: 0px;
-	right: 400px;
-	margin-left: auto;
-	margin-right: auto;
-	background-color: grey;
-	z-index: 100;
-}
-
-.oddhexrow {
-	padding-left: 34px;
-	display: inline-block;
-    display: table;
-}
-
-.evenhexrow {
-	margin-bottom: -25px;
-	margin-top: -25px;
-    display: table;
-}
-
-
-.hexcell {
-	width: 68px;
-	height: 76px;
-	display: inline-block;
-}
-
 textarea {
     resize: none;
 }
 
-/*there be dragons*/
-.hexcell.hexagon {
-	background-image: url(../images/perfectHex.png);
-	background-repeat: no-repeat;
-	overflow: visible;
-	position: absolute;
+#buttons {
+    position: absolute;
     z-index: 10;
     pointer-events:none;
-}
-.hexcell.hidden {
-	background-image: url(../images/hidden.png);
-	position: absolute;
-    z-index: 5;
-    pointer-events:none;
-}
-.hexcell.explored {
-	position: absolute;
-    z-index: 5;
-    pointer-events:none;
+    width: 2048px;
+    height: 1496px;
 }
 
-.hexcell.display {
-	background-repeat: no-repeat;
-	background-position: center center;
-	overflow: hidden;
-	-webkit-clip-path: polygon(34px 1px, 67px 20px, 67px 56px, 34px 75px, 1px 56px, 1px 19px);
-    clip-path: polygon(34px 1px, 67px 20px, 67px 56px, 34px 75px, 1px 56px, 1px 19px);
+.button {
+    text-shadow: -2px 0 white, 0 2px white, 2px 0 white, 0 -2px white;
+    pointer-events: all;
+    position: absolute;
+    display: inline-block;
 }
 
+#upButton {
+    top: 0;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+}
+
+#downButton {
+    bottom: 0;
+    margin: 0 auto;
+    left: 0;
+    right: 0;
+}
+
+#leftButton {
+    left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+#rightButton {
+    right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+#canvas {
+    position: absolute;
+}
