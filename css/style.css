@@ -22,17 +22,11 @@ body {
 	padding: 0;
 	background-color: rgb(200,200,200);
 	backface-visibility: hidden;
-    font-size: 40px;
     pointer-events: all;
 }
 
 #selectorList li {
     margin : 5px;
-}
-
-#selectorList textarea {
-    width: 35px;
-    height: 35px;
 }
 
 textarea {
@@ -82,4 +76,8 @@ textarea {
 
 #canvas {
     position: absolute;
+}
+
+.fa-bigx {
+  font-size: 7em;
 }
