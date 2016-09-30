@@ -5,7 +5,7 @@ body {
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
-    background-color: black;
+    background-color: white;
 }
 
 * {
@@ -14,19 +14,19 @@ body {
 }
 
 #selectorList {
-	position: absolute;
-	top: 0;
-	right: 0;
-	list-style-type: none;
-	margin: 0;
-	padding: 0;
-	background-color: rgb(200,200,200);
-	backface-visibility: hidden;
+    position: absolute;
+    top: 0;
+    right: 0;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: rgb(200, 200, 200);
+    backface-visibility: hidden;
     pointer-events: all;
 }
 
 #selectorList li {
-    margin : 5px;
+    margin: 5px;
 }
 
 textarea {
@@ -34,11 +34,11 @@ textarea {
 }
 
 #buttons {
-    position: absolute;
+    /* position: absolute; */
     z-index: 10;
-    pointer-events:none;
-    width: 2048px;
-    height: 1496px;
+    pointer-events: none;
+    /* width: 2048px; */
+    /* height: 1496px; */
 }
 
 .button {
@@ -64,14 +64,14 @@ textarea {
 
 #leftButton {
     left: 0;
-	top: 50%;
-	transform: translateY(-50%);
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 #rightButton {
     right: 0;
-	top: 50%;
-	transform: translateY(-50%);
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 #canvas {
@@ -79,5 +79,5 @@ textarea {
 }
 
 .fa-bigx {
-  font-size: 7em;
+    font-size: 4em;
 }
