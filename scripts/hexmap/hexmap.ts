@@ -1,14 +1,20 @@
-enum ColumnPosition {
+import { HexTile } from "./hextile";
+import { HexMapTiles } from "./hexmaptiles";
+import { TileColor } from "./tilecolor";
+import { ZoomLevel } from "./zoomlevel";
+import { utils } from "../utils/urlobject";
+
+export enum ColumnPosition {
     LEFT,
     RIGHT,
 }
 
-enum Mode {
+export enum Mode {
     EDIT,
     EXPLORE
 }
 
-class HexMap {
+export class HexMap {
 
     hexSideLength: number;
     hexHeight: number;
@@ -86,7 +92,7 @@ class HexMap {
             this.mode = Mode.EXPLORE;
         }
 
-        this.updateHexDimensions(1);
+        this.updateHexDimensions();
 
         this.loadImages();
 
@@ -96,7 +102,7 @@ class HexMap {
         this.canvas.addEventListener("mousemove", (e) => this.click(e));
     }
 
-    updateHexDimensions(zoomLevel: number) {
+    updateHexDimensions() {
         this.hexSideLength = 35;
         this.hexHeight = 2 * this.hexSideLength;
     }
@@ -108,7 +114,7 @@ class HexMap {
         this.baseXPos *= Math.floor(this.zoomLevelMap[this.zoomLevel + 1].halfWidth / this.zoomLevelMap[this.zoomLevel].halfWidth);
         this.baseYPos *= Math.floor(this.zoomLevelMap[this.zoomLevel + 1].halfHeight / this.zoomLevelMap[this.zoomLevel].halfHeight);
         this.zoomLevel++;
-        this.updateHexDimensions(this.zoomLevel);
+        this.updateHexDimensions();
         this.deleteMap();
         this.drawMap();
     }
@@ -120,7 +126,7 @@ class HexMap {
         this.baseXPos *= Math.floor(this.zoomLevelMap[this.zoomLevel - 1].halfWidth / this.zoomLevelMap[this.zoomLevel].halfWidth);
         this.baseYPos *= Math.floor(this.zoomLevelMap[this.zoomLevel - 1].halfHeight / this.zoomLevelMap[this.zoomLevel].halfHeight);
         this.zoomLevel--;
-        this.updateHexDimensions(this.zoomLevel);
+        this.updateHexDimensions();
         this.deleteMap();
         this.drawMap();
     }
@@ -130,15 +136,15 @@ class HexMap {
     }
 
     loadImages() {
-        var xmlhttp = new XMLHttpRequest();
-        var url = "getimagenames.php";
+        let xmlhttp = new XMLHttpRequest();
+        let url = "getimagenames.php";
         this.baseImages = {};
-        var parent = this;
+        let parent = this;
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                var imageNames: [string] = JSON.parse(xmlhttp.responseText);
+                let imageNames: [string] = JSON.parse(xmlhttp.responseText);
                 imageNames.forEach(function (element) {
-                    var baseImage = new Image();
+                    let baseImage = new Image();
                     baseImage.src = "images/" + element;
                     parent.baseImages[element.substr(0, element.length - 4)] = baseImage;
                 }, parent);
@@ -149,8 +155,8 @@ class HexMap {
     }
 
     deleteMap() {
-        var canvas = <HTMLCanvasElement>document.getElementById("canvas");
-        var context = <CanvasRenderingContext2D>canvas.getContext("2d");
+        let canvas = <HTMLCanvasElement>document.getElementById("canvas");
+        let context = <CanvasRenderingContext2D>canvas.getContext("2d");
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
 
@@ -162,12 +168,16 @@ class HexMap {
             return;
         }
         this.repositionMap();
-        this.mapTiles.forEach((x) => this.drawTile(x));
+        this.mapTiles.forEach((x) => x != null ? this.drawTile(x) : null);
     }
 
     repositionMap() {
-        var totalWidth = this.currentZoomLevel().width * this.mapTiles.getWidth() + this.currentZoomLevel().halfWidth;
-        var totalHeight = this.currentZoomLevel().halfHeight * this.mapTiles.getBottomRightTile().y + this.currentZoomLevel().height;
+        let bottomRightTile: HexTile | null = this.mapTiles.getBottomRightTile();
+        if (bottomRightTile === null) {
+            throw new Error("Cannot reposition map, maybe it isn't created yet.");
+        }
+        let totalWidth = this.currentZoomLevel().width * this.mapTiles.getWidth() + this.currentZoomLevel().halfWidth;
+        let totalHeight = this.currentZoomLevel().halfHeight * bottomRightTile.y + this.currentZoomLevel().height;
 
         if (this.canvas.width > totalWidth) {
             this.baseXPos = Math.floor((totalWidth - this.canvas.width) / 2)
@@ -186,10 +196,10 @@ class HexMap {
     }
 
     drawTile(tile: HexTile, selector: boolean = false) {
-        var explored = tile["explored"] || this.mode == Mode.EDIT;
+        let explored = tile["explored"] || this.mode == Mode.EDIT;
 
-        var XPos = selector ? 15 : this.hex_to_pixel(tile).x - this.baseXPos;
-        var YPos = selector ? 15 : this.hex_to_pixel(tile).y - this.baseYPos;
+        let XPos = selector ? 15 : this.hex_to_pixel(tile).x - this.baseXPos;
+        let YPos = selector ? 15 : this.hex_to_pixel(tile).y - this.baseYPos;
 
         if (XPos + this.currentZoomLevel().width < 0 || YPos + this.hexHeight < 0) {
             return;
@@ -208,7 +218,7 @@ class HexMap {
         }
 
         if (tile.image != "nothing" && tile.image != "" && this.currentZoomLevel().width > 20 && explored) {
-            var baseImage = this.baseImages[tile.image];
+            let baseImage = this.baseImages[tile.image];
             this.context.drawImage(baseImage, XPos - (baseImage.width - this.currentZoomLevel().width) / 2, YPos - (baseImage.height - this.currentZoomLevel().height) / 2);
         }
         if (this.drawHexNumbers) {
@@ -223,7 +233,7 @@ class HexMap {
     /*
         addColumn(position : ColumnPosition) {
             for (var row = 0; row < this.mapTiles.length; row++) {
-                var cell = {};
+                let cell = {};
                 cell["tile"] = this.defaultMapTile;
                 cell["color"] = this.defaultMapColor;
                 cell["explored"] = false;
@@ -240,16 +250,16 @@ class HexMap {
         this.generateNewMap(this.defaultMapSize, this.defaultMapSize, this.defaultMapImage, this.defaultMapColor);
     }
 
-    generateNewMap(width, height, tileClassName, colorClassName) {
+    generateNewMap(width: number, height: number, tileClassName: string, colorClassName: TileColor) {
         this.mapTiles = new HexMapTiles();
         for (var column = 0; column < width; column++) {
-            var x = column;
-            var y = 0;
+            let x = column;
+            let y = 0;
 
             for (var row = 0; row < height; row++) {
 
 
-                var tile = new HexTile();
+                let tile = new HexTile();
                 tile.image = tileClassName;
                 tile.color = colorClassName;
                 tile.explored = false;
@@ -268,7 +278,7 @@ class HexMap {
         }
     }
 
-    selectHex(hexName, colorName) {
+    selectHex(hexName: string, colorName: TileColor) {
         if (hexName != null) {
             this.selectedImage = hexName;
         }
@@ -283,8 +293,10 @@ class HexMap {
             if (this.bigPaint) {
                 this.mapTiles.forEachInFOV(x, y, (e) => this.changeTile(e));
             } else {
-                var tile = this.mapTiles.get(x, y);
-                this.changeTile(tile);
+                let tile = this.mapTiles.get(x, y);
+                if (tile !== null) {
+                    this.changeTile(tile);
+                }
             }
         } else {
             this.mapTiles.forEachInFOV(x, y, (e) => this.explore(e));
@@ -305,15 +317,15 @@ class HexMap {
     }
 
     load() {
-        var mapName: string = prompt("Enter map name.");
+        let mapName: string | null = prompt("Enter map name.");
         if (mapName == null) {
             return;
         }
         this.loadImages();
-        var xmlhttp = new XMLHttpRequest();
-        var url = "load.php?filename=" + mapName;
+        let xmlhttp = new XMLHttpRequest();
+        let url = "load.php?filename=" + mapName;
 
-        var parent = this;
+        let parent = this;
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
                 parent.mapTiles.setTiles(JSON.parse(xmlhttp.responseText));
@@ -326,12 +338,12 @@ class HexMap {
     }
 
     save() {
-        var mapName: string = prompt("Enter map name.");
+        let mapName: string | null = prompt("Enter map name.");
         if (mapName == null) {
             return;
         }
-        var xmlhttp = new XMLHttpRequest();
-        var url = "save.php?filename=" + mapName;
+        let xmlhttp = new XMLHttpRequest();
+        let url = "save.php?filename=" + mapName;
 
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
@@ -370,30 +382,30 @@ class HexMap {
     pixel_to_hex(x: number, y: number) {
         x -= this.currentZoomLevel().width / 2;
         y -= this.currentZoomLevel().height / 2;
-        var r = y / this.currentZoomLevel().halfHeight;
-        var q = (x - r * this.currentZoomLevel().halfWidth) / this.currentZoomLevel().width;
-        var hexPosition = this.hex_round(q, r);
+        let r = y / this.currentZoomLevel().halfHeight;
+        let q = (x - r * this.currentZoomLevel().halfWidth) / this.currentZoomLevel().width;
+        let hexPosition = this.hex_round(q, r);
         return this.mapTiles.get(hexPosition[0], hexPosition[1]);
     }
 
     hex_to_pixel(tile: HexTile) {
-        var x = this.currentZoomLevel().width * tile.x + tile.y * this.currentZoomLevel().halfWidth;
-        var y = this.currentZoomLevel().halfHeight * tile.y;
+        let x = this.currentZoomLevel().width * tile.x + tile.y * this.currentZoomLevel().halfWidth;
+        let y = this.currentZoomLevel().halfHeight * tile.y;
         return { "x": Math.floor(x), "y": Math.floor(y) };
     }
 
     hex_round(q: number, r: number) {
-        var x: number = q;
-        var z: number = r;
-        var y: number = -x - z;
+        let x: number = q;
+        let z: number = r;
+        let y: number = -x - z;
 
-        var rx: number = Math.round(x);
-        var ry: number = Math.round(y);
-        var rz: number = Math.round(z);
+        let rx: number = Math.round(x);
+        let ry: number = Math.round(y);
+        let rz: number = Math.round(z);
 
-        var x_diff: number = Math.abs(rx - x);
-        var y_diff: number = Math.abs(ry - y);
-        var z_diff: number = Math.abs(rz - z);
+        let x_diff: number = Math.abs(rx - x);
+        let y_diff: number = Math.abs(ry - y);
+        let z_diff: number = Math.abs(rz - z);
 
         if (x_diff > y_diff && x_diff > z_diff) {
             rx = -ry - rz;
@@ -419,14 +431,14 @@ class HexMap {
         }
         if (e.type != "mousemove" || this.mouseHeld == true) {
             if (this.previousMouseMove && Date.now() < this.previousMouseMove[2] + 100) {
-                var xHalfPoint = Math.floor((e.clientX + this.previousMouseMove[0]) / 2) + this.baseXPos;
-                var yHalfPoint = Math.floor((e.clientY + this.previousMouseMove[1]) / 2) + this.baseYPos;
-                var hex: HexTile = this.pixel_to_hex(xHalfPoint, yHalfPoint);
+                let xHalfPoint = Math.floor((e.clientX + this.previousMouseMove[0]) / 2) + this.baseXPos;
+                let yHalfPoint = Math.floor((e.clientY + this.previousMouseMove[1]) / 2) + this.baseYPos;
+                let hex: HexTile | null = this.pixel_to_hex(xHalfPoint, yHalfPoint);
                 if (hex) {
                     this.hexClicked(hex.x, hex.y);
                 }
             }
-            var hex: HexTile = this.pixel_to_hex(e.clientX + this.baseXPos, e.clientY + this.baseYPos);
+            let hex: HexTile | null = this.pixel_to_hex(e.clientX + this.baseXPos, e.clientY + this.baseYPos);
             if (hex) {
                 this.previousMouseMove = [e.clientX, e.clientY, Date.now()];
                 this.hexClicked(hex.x, hex.y);
@@ -473,7 +485,7 @@ class HexMap {
     }
 
     drawHexSelector() {
-        var selector: HexTile = new HexTile();
+        let selector: HexTile = new HexTile();
         selector.color = this.selectedColor;
         selector.image = this.selectedImage;
         this.drawTile(selector, true);

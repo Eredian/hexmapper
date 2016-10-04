@@ -1,5 +1,4 @@
-class HexTileInfo {
+export class HexTileInfo {
     name: string;
-    description: string;
-    
+    description: string; 
 }

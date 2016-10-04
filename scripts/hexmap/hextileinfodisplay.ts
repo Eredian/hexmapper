@@ -1,4 +1,6 @@
-class HexTileInfoDisplay {
+import {HexTile} from './hextile';
+
+export class HexTileInfoDisplay {
     tile: HexTile;
     displayRoot: HTMLDivElement = document.createElement("div");
     displayTitle: HTMLHeadingElement = document.createElement("h3");

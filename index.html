@@ -1,40 +1,43 @@
 <!DOCTYPE html>
 <html>
-    
-    <head>
-        <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="viewport" content="width=device-width">
-        <link rel="stylesheet" href="css/font-awesome.min.css">
-        <link rel="stylesheet" type="text/css" href="css/style.css">
-        <script src="scripts/mousetrap.min.js"></script>
-        <script src="scripts/hexmapper.js"></script>
-        <title>Hex Mapper</title>
-    </head>
-    
-    <body>
-        <canvas id="canvas" width="2048" height="1496"></canvas>
-        <div id="buttons">
-            <i class="fa fa-fw fa-arrow-up fa-bigx button" id="upButton"></i>
-            <i class="fa fa-fw fa-arrow-down fa-bigx button" id="downButton"></i>
-            <i class="fa fa-fw fa-arrow-left fa-bigx button" id="leftButton"></i>
-            <i class="fa fa-fw fa-arrow-right fa-bigx button" id="rightButton"></i>
-            <ul id="selectorList">
-                <li id="zoomInButton" style="cursor: pointer;">
-                    <i class="fa fa-fw fa-plus fa-bigx"></i>
-                </li>
-                <li id="zoomOutButton" style="cursor: pointer;">
-                    <i class="fa fa-fw fa-minus fa-bigx"></i>
-                </li>
-                <li id="mapSaveButton" style="cursor: pointer;">
-                    <i class="fa fa-fw fa-floppy-o fa-bigx"></i>
-                </li>
-                <li id="mapLoadButton" style="cursor: pointer;">
-                    <i class="fa fa-fw fa-download fa-bigx"></i>
-                </li>
-            </ul>
-        </div>
-    </body>
+
+<head>
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+	/>
+	<meta name="apple-mobile-web-app-capable" content="yes" />
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+	<meta name="viewport" content="width=device-width">
+	<link rel="stylesheet" href="css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css">
+	<script src="scripts/mousetrap.min.js"></script>
+	<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.2/require.js" data-main="lib/hexmapper.js"></script>-->
+	<script src="dist/bundle.js"></script>
+
+	<title>Hex Mapper</title>
+</head>
+
+<body>
+	<canvas id="canvas" width="2048" height="1496"></canvas>
+	<div id="buttons">
+		<i class="fa fa-fw fa-arrow-up fa-bigx button" id="upButton"></i>
+		<i class="fa fa-fw fa-arrow-down fa-bigx button" id="downButton"></i>
+		<i class="fa fa-fw fa-arrow-left fa-bigx button" id="leftButton"></i>
+		<i class="fa fa-fw fa-arrow-right fa-bigx button" id="rightButton"></i>
+		<ul id="selectorList">
+			<li id="zoomInButton" style="cursor: pointer;">
+				<i class="fa fa-fw fa-plus fa-bigx"></i>
+			</li>
+			<li id="zoomOutButton" style="cursor: pointer;">
+				<i class="fa fa-fw fa-minus fa-bigx"></i>
+			</li>
+			<li id="mapSaveButton" style="cursor: pointer;">
+				<i class="fa fa-fw fa-floppy-o fa-bigx"></i>
+			</li>
+			<li id="mapLoadButton" style="cursor: pointer;">
+				<i class="fa fa-fw fa-download fa-bigx"></i>
+			</li>
+		</ul>
+	</div>
+</body>
 
 </html>

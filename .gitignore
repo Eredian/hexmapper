@@ -6,8 +6,8 @@ maps*
 tsconfig.json
 tasks.json
 .settings
+dist
 
-*.js
 *.js.map
 !require.js
 !domReady.js

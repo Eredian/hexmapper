@@ -1,4 +1,8 @@
-class HexMapTiles {
+import {TileColor} from './tilecolor';
+import {HexTile} from './hextile';
+import {OperateOnTile} from './operateontile';
+
+export class HexMapTiles {
     // First key is x and second key y
     tiles: { [key: number]: { [key: number]: HexTile } };
     invertedTiles: { [key: number]: { [key: number]: HexTile } };
@@ -26,7 +30,7 @@ class HexMapTiles {
         return false;
     }
 
-    get(x: number, y: number): HexTile {
+    get(x: number, y: number): HexTile | null {
         if (this.tiles[x] != null) {
             return this.tiles[x][y];
         }
@@ -46,18 +50,19 @@ class HexMapTiles {
     }
 
     forEachInFOV(x: number, y: number, func: OperateOnTile) {
-        var tiles: [HexTile] = [this.get(x, y), this.get(x + 1, y), this.get(x, y + 1), this.get(x - 1, y), this.get(x, y - 1), this.get(x + 1, y - 1), this.get(x - 1, y + 1)];
+        let tiles: [HexTile | null] = [this.get(x, y), this.get(x + 1, y), this.get(x, y + 1), this.get(x - 1, y), this.get(x, y - 1), this.get(x + 1, y - 1), this.get(x - 1, y + 1)];
         tiles.map(func);
     }
 
     addRow(right: boolean) {
-        var topLeftTile: HexTile = this.getTopLeftTile();
-        var x: number = topLeftTile.x - 1;
-        var y: number = topLeftTile.y;
-        var height: number = this.getHeight();
-        var newRowHeight: number = 0;
+        if (right) {}
+        let topLeftTile: HexTile = this.getTopLeftTile();
+        let x: number = topLeftTile.x - 1;
+        let y: number = topLeftTile.y;
+        let height: number = this.getHeight();
+        let newRowHeight: number = 0;
         while (height != newRowHeight) {
-            var tile = new HexTile();
+            let tile = new HexTile();
             tile.image = "nothing";
             tile.color = TileColor.NOTHING;
             tile.explored = false;
@@ -80,11 +85,11 @@ class HexMapTiles {
     }
 
     getWidth(): number {
-        var yKeys: string[] = Object.keys(this.invertedTiles);
-        yKeys.sort(function (a, b) { return parseInt(a) - parseInt(b) });
+        let yKeys: number[] = Object.keys(this.invertedTiles).map(this.toInt);
+        yKeys.sort(function (a, b) { return a - b });
 
-        var xKeys: string[] = Object.keys(this.invertedTiles[yKeys[0]]);
-        xKeys.sort(function (a, b) { return parseInt(a) - parseInt(b) });
+        let xKeys: number[] = Object.keys(this.invertedTiles[yKeys[0]]).map(this.toInt);
+        xKeys.sort(function (a, b) { return a - b });
 
         return Math.max.apply(Math, Object.keys(this.tiles)) + 1;
     }
@@ -94,23 +99,28 @@ class HexMapTiles {
     }
 
     getTopLeftTile(): HexTile {
-        var yKeys: string[] = Object.keys(this.invertedTiles);
-        yKeys.sort(function (a, b) { return parseInt(a) - parseInt(b) });
+        let yKeys: number[] = Object.keys(this.invertedTiles).map(this.toInt);
+        yKeys.sort(function (a, b) { return a - b });
 
-        var xKeys: string[] = Object.keys(this.invertedTiles[yKeys[0]]);
-        xKeys.sort(function (a, b) { return parseInt(a) - parseInt(b) });
+        let xKeys: number[] = Object.keys(this.invertedTiles[yKeys[0]]).map(this.toInt);
+        xKeys.sort(function (a, b) { return a - b });
 
         return this.tiles[xKeys[0]][yKeys[0]];
     }
 
     getBottomRightTile(): HexTile {
-        var yKeys: string[] = Object.keys(this.invertedTiles);
-        yKeys.sort(function (a, b) { return parseInt(a) - parseInt(b) });
-        var lastYKey: number = parseInt(yKeys.pop());
-        var xKeys: string[] = Object.keys(this.invertedTiles[lastYKey]);
-        xKeys.sort(function (a, b) { return parseInt(a) - parseInt(b) });
-
-        return this.tiles[xKeys.pop()][lastYKey];
+        let yKeys: number[] = Object.keys(this.invertedTiles).map(this.toInt);
+        yKeys.sort(function (a, b) { return a - b });
+        let lastYKey: number | undefined = yKeys.pop();
+        if (lastYKey != undefined) {
+            let xKeys: number[] = Object.keys(this.invertedTiles[lastYKey]).map(this.toInt);
+            xKeys.sort(function (a, b) { return a - b });
+            let lastXKey: number | undefined = xKeys.pop();
+            if (lastXKey != undefined) {
+                return this.tiles[lastXKey][lastYKey];
+            }
+        }
+        throw Error("Could not find the bottom right tile.");
     }
 
     setTiles(tiles: { [key: number]: { [key: number]: HexTile } }) {
@@ -123,5 +133,9 @@ class HexMapTiles {
                 }
             }
         }
+    }
+
+    toInt(string: string) {
+        return parseInt(string);
     }
 }

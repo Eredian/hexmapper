@@ -29,7 +29,7 @@ interface MousetrapInstance {
     reset(): void;
 }
 
-declare var Mousetrap: MousetrapStatic;
+declare let Mousetrap: MousetrapStatic;
 
 declare module "mousetrap" {
     export = Mousetrap;

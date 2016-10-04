@@ -1,5 +1,7 @@
-class ZoomLevel {
+import {BorderColor} from './bordercolor';
+import {TileColor} from './tilecolor';
 
+export class ZoomLevel {
     width: number;
     height: number;
     halfWidth: number;
@@ -11,20 +13,27 @@ class ZoomLevel {
     borderColorMap: { [key: number]: HTMLImageElement } = {};
 
     hiddenCanvas: HTMLCanvasElement = document.createElement("canvas");
+    hiddenCanvasContext: CanvasRenderingContext2D;
 
     constructor(halfWidth: number, halfHeight: number, filePath: string) {
         this.halfWidth = halfWidth;
         this.halfHeight = halfHeight;
         this.filePath = filePath;
 
-        var img = new Image();
+        let canvasContext = this.hiddenCanvas.getContext("2d");
+        if (canvasContext === null) {
+            throw Error("Error creating hidden canvas.");
+        }
+        this.hiddenCanvasContext = canvasContext;
+
+        let img = new Image();
         img.onload = () => {
             this.hiddenCanvas.width = img.width;
             this.hiddenCanvas.height = img.height;
             this.width = img.width;
             this.height = img.height;
-            this.hiddenCanvas.getContext("2d").drawImage(img, 0, 0);
-            var baseHexImage = this.hiddenCanvas.getContext("2d").getImageData(0, 0, img.width, img.height);
+            this.hiddenCanvasContext.drawImage(img, 0, 0);
+            let baseHexImage = this.hiddenCanvasContext.getImageData(0, 0, img.width, img.height);
 
             this.colorMap[TileColor.CAVERN_GROUND] = this.generateColorImage(180, 180, 180, baseHexImage);
             this.colorMap[TileColor.NOTHING] = this.generateColorImage(0, 0, 0, baseHexImage);
@@ -35,12 +44,12 @@ class ZoomLevel {
         }
         img.src = 'img/' + filePath + '/hex.png';
 
-        var borderImg = new Image();
+        let borderImg = new Image();
         borderImg.onload = () => {
             this.hiddenCanvas.width = borderImg.width;
             this.hiddenCanvas.height = borderImg.height;
-            this.hiddenCanvas.getContext("2d").drawImage(borderImg, 0, 0);
-            var baseBorderImage = this.hiddenCanvas.getContext("2d").getImageData(0, 0, borderImg.width, borderImg.height);
+            this.hiddenCanvasContext.drawImage(borderImg, 0, 0);
+            let baseBorderImage = this.hiddenCanvasContext.getImageData(0, 0, borderImg.width, borderImg.height);
 
             this.borderColorMap[BorderColor.CR0] = this.generateColorImage(0, 0, 255, baseBorderImage);
             this.borderColorMap[BorderColor.CR1] = this.generateColorImage(0, 127, 127, baseBorderImage);
@@ -55,9 +64,9 @@ class ZoomLevel {
     }
 
     generateColorImage(R: number, G: number, B: number, baseImage: ImageData) {
-        var imageData = this.hiddenCanvas.getContext("2d").createImageData(baseImage.width, baseImage.height);
+        let imageData = this.hiddenCanvasContext.createImageData(baseImage.width, baseImage.height);
         imageData.data.set(baseImage.data);
-        var data = imageData.data;
+        let data = imageData.data;
         for (var i = 0, n = data.length; i < n; i += 4) {
             if (data[i + 3] != 0) {
                 data[i] = R;
@@ -65,8 +74,8 @@ class ZoomLevel {
                 data[i + 2] = B;
             }
         }
-        this.hiddenCanvas.getContext("2d").putImageData(imageData, 0, 0);
-        var img = document.createElement("img");
+        this.hiddenCanvasContext.putImageData(imageData, 0, 0);
+        let img = document.createElement("img");
         img.src = this.hiddenCanvas.toDataURL("image/png");
         return img;
     }

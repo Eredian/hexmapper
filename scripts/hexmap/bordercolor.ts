@@ -1,4 +1,4 @@
-enum BorderColor {
+export enum BorderColor {
     CR0,
     CR1,
     CR2,

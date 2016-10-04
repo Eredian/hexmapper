@@ -1,4 +1,4 @@
-enum TileColor {
+export enum TileColor {
     CAVERN_GROUND,
     MURKY_WATER,
     SWAMP_RIVER,
