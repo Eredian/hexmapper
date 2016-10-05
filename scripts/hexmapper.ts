@@ -1,3 +1,4 @@
+import {EventHandler} from './hexmap/eventhandler';
 import {HexMap} from './hexmap/hexmap';
 
 var map: HexMap;
@@ -38,52 +39,16 @@ document.addEventListener("touchmove", function (e: TouchEvent) {
     }
 });
 
-function handleClick(func: Function, e: MouseEvent) {
-    if (e.button == 0) {
-        func();
-    }
-}
-
-function tryAddListener(id: string, type: string, func: any) {
-    let element = document.getElementById(id);
-    if (element !== null) {
-        element.addEventListener(type, func);
-    } else {
-        throw Error("Element with id " + id + " does not exist.");
-    }
-}
-
 window.onload = function () {
     map = new HexMap();
     map.resize(window.innerWidth, window.innerHeight, false);
-
-    tryAddListener("zoomInButton", "mouseup", (e: MouseEvent) => handleClick(() => map.zoomIn(), e));
-    tryAddListener("zoomOutButton", "mouseup", () => map.zoomOut());
-    tryAddListener("mapSaveButton", "mouseup", () => map.save());
-    tryAddListener("mapLoadButton", "mouseup", () => map.load());
-
-    tryAddListener("upButton", "mouseup", () => map.up());
-    tryAddListener("downButton", "mouseup", () => map.down());
-    tryAddListener("leftButton", "mouseup", () => map.left());
-    tryAddListener("rightButton", "mouseup", () => map.right());
+    
+    new EventHandler(map);
 
     window.addEventListener("resize", () => map.resize(window.innerWidth, window.innerHeight, true), false);
 
-    window.addEventListener("orientationchange", function () {
-        // Announce the new orientation number
-        alert(window.orientation);
-    }, false);
-
     map.generateNewDefaultMap();
     map.drawMap();
-
-    Mousetrap.bind('q', function () { map.nextSelectedImage(false); });
-    Mousetrap.bind('a', function () { map.nextSelectedImage(true); });
-    Mousetrap.bind('+', function () { map.setBigPaint(true); });
-    Mousetrap.bind('-', function () { map.setBigPaint(false); });
-    Mousetrap.bind('w', function () { map.nextSelectedColor(false); });
-    Mousetrap.bind('s', function () { map.nextSelectedColor(true); });
-    Mousetrap.bind('y', function () { map.addColumn(false); });
 };
 
 

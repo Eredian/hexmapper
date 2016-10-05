@@ -34,11 +34,8 @@ textarea {
 }
 
 #buttons {
-    /* position: absolute; */
     z-index: 10;
     pointer-events: none;
-    /* width: 2048px; */
-    /* height: 1496px; */
 }
 
 .button {
@@ -80,4 +77,11 @@ textarea {
 
 .fa-bigx {
     font-size: 4em;
+    cursor: pointer;
+}
+
+@media screen and (max-device-width: 320px) {
+    .fa-bigx {
+        font-size: 3em;
+    }
 }
