@@ -160,8 +160,6 @@ export class HexMap {
         context.clearRect(0, 0, canvas.width, canvas.height);
     }
 
-
-
     drawMap() {
         if (!this.currentZoomLevel().ready) {
             setTimeout(() => { this.drawMap(); }, 10);
@@ -172,26 +170,30 @@ export class HexMap {
     }
 
     repositionMap() {
-        let bottomRightTile: HexTile | null = this.mapTiles.getBottomRightTile();
-        if (bottomRightTile === null) {
-            throw new Error("Cannot reposition map, maybe it isn't created yet.");
-        }
-        let totalWidth = this.currentZoomLevel().width * this.mapTiles.getWidth() + this.currentZoomLevel().halfWidth;
-        let totalHeight = this.currentZoomLevel().halfHeight * bottomRightTile.y + this.currentZoomLevel().height;
+        let bottomRightTile: HexTile = this.mapTiles.getBottomRightTile();
+        let topLeftTile: HexTile = this.mapTiles.getTopLeftTile();
+
+        let leftEdgeOffset: number = this.hex_to_pixel(topLeftTile).x;
+        let rightEdgeOffset: number = this.hex_to_pixel(bottomRightTile).x + this.currentZoomLevel().width;
+        let topEdgeOffset: number = this.hex_to_pixel(topLeftTile).y;
+        let bottomEdgeOffset: number = this.hex_to_pixel(bottomRightTile).y + this.currentZoomLevel().height;
+
+        let totalWidth = rightEdgeOffset - leftEdgeOffset;
+        let totalHeight = bottomEdgeOffset - topEdgeOffset;
 
         if (this.canvas.width > totalWidth) {
-            this.baseXPos = Math.floor((totalWidth - this.canvas.width) / 2)
-        } else if (this.baseXPos > totalWidth - this.canvas.width) {
-            this.baseXPos = totalWidth - this.canvas.width;
-        } else if (this.baseXPos < 0) {
-            this.baseXPos = 0;
+            this.baseXPos = Math.floor((totalWidth - this.canvas.width) / 2) + leftEdgeOffset
+        } else if (this.baseXPos > rightEdgeOffset - this.canvas.width) {
+            this.baseXPos = rightEdgeOffset - this.canvas.width;
+        } else if (this.baseXPos < leftEdgeOffset) {
+            this.baseXPos = leftEdgeOffset;
         }
         if (this.canvas.height > totalHeight) {
-            this.baseYPos = Math.floor((totalHeight - this.canvas.height) / 2)
-        } else if (this.baseYPos > totalHeight - this.canvas.height) {
-            this.baseYPos = totalHeight - this.canvas.height;
-        } else if (this.baseYPos < 0) {
-            this.baseYPos = 0;
+            this.baseYPos = Math.floor((totalHeight - this.canvas.height) / 2) + topEdgeOffset
+        } else if (this.baseYPos > bottomEdgeOffset - this.canvas.height) {
+            this.baseYPos = bottomEdgeOffset - this.canvas.height;
+        } else if (this.baseYPos < topEdgeOffset) {
+            this.baseYPos = topEdgeOffset;
         }
     }
 
@@ -230,22 +232,7 @@ export class HexMap {
             this.context.fillText(tile.x + ', ' + tile.y, XPos + this.currentZoomLevel().width / 2, YPos + this.currentZoomLevel().height / 2);
         }
     }
-    /*
-        addColumn(position : ColumnPosition) {
-            for (var row = 0; row < this.mapTiles.length; row++) {
-                let cell = {};
-                cell["tile"] = this.defaultMapTile;
-                cell["color"] = this.defaultMapColor;
-                cell["explored"] = false;
-                if (position == ColumnPosition.RIGHT) {
-                    this.mapTiles[row].push(cell);
-                } else {
-                    this.mapTiles[row].unshift(cell);
-                }
-            }
-            this.drawMap();
-        }
-    */
+    
     generateNewDefaultMap() {
         this.generateNewMap(this.defaultMapSize, this.defaultMapSize, this.defaultMapImage, this.defaultMapColor);
     }
@@ -257,8 +244,6 @@ export class HexMap {
             let y = 0;
 
             for (var row = 0; row < height; row++) {
-
-
                 let tile = new HexTile();
                 tile.image = tileClassName;
                 tile.color = colorClassName;
@@ -286,7 +271,6 @@ export class HexMap {
             this.selectedColor = colorName;
         }
     }
-
 
     hexClicked(x: number, y: number) {
         if (this.mode == Mode.EDIT) {
@@ -492,7 +476,12 @@ export class HexMap {
     }
 
     addColumn(right: boolean) {
-        this.mapTiles.addRow(right);
+        this.mapTiles.addColumn(right);
+        this.drawMap();
+    }
+    
+    addRow(bottom: boolean) {
+        this.mapTiles.addRow(bottom);
         this.drawMap();
     }
 

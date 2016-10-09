@@ -1,50 +1,44 @@
-import {TileColor} from './tilecolor';
-import {HexTile} from './hextile';
-import {OperateOnTile} from './operateontile';
+import { TileColor } from './tilecolor';
+import { HexTile } from './hextile';
+import { OperateOnTile } from './operateontile';
 
 export class HexMapTiles {
     // First key is x and second key y
-    tiles: { [key: number]: { [key: number]: HexTile } };
-    invertedTiles: { [key: number]: { [key: number]: HexTile } };
+    tiles: Map<number, Map<number, HexTile>>;
+    invertedTiles: Map<number, Map<number, HexTile>>;
 
     constructor() {
-        this.tiles = {};
-        this.invertedTiles = {};
+        this.tiles = new Map<number, Map<number, HexTile>>();
+        this.invertedTiles = new Map<number, Map<number, HexTile>>();
     }
 
     add(x: number, y: number, value: HexTile): void {
-        if (this.tiles[x] == null) {
-            this.tiles[x] = {};
+        if (!this.tiles.has(x)) {
+            this.tiles.set(x, new Map<number, HexTile>());
         }
-        this.tiles[x][y] = value;
-        if (this.invertedTiles[y] == null) {
-            this.invertedTiles[y] = {};
+        this.tiles.get(x) !.set(y, value);
+        if (!this.invertedTiles.has(y)) {
+            this.invertedTiles.set(y, new Map<number, HexTile>());
         }
-        this.invertedTiles[y][x] = value;
+        this.invertedTiles.get(y) !.set(x, value);
+
     }
 
     has(x: number, y: number): boolean {
-        if (x in this.tiles) {
-            y in this.tiles[x];
-        }
-        return false;
+        return (this.tiles.has(x) && this.tiles.get(x) !.has(y));
     }
 
     get(x: number, y: number): HexTile | null {
-        if (this.tiles[x] != null) {
-            return this.tiles[x][y];
+        if (this.tiles.has(x) && this.tiles.get(x) !.has(y)) {
+            return this.tiles.get(x) !.get(y) !;
         }
         return null;
     }
 
     forEach(func: OperateOnTile) {
-        for (var key1 in this.tiles) {
-            if (this.tiles.hasOwnProperty(key1)) {
-                for (var key2 in this.tiles[key1]) {
-                    if (this.tiles[key1].hasOwnProperty(key2)) {
-                        func(this.tiles[key1][key2]);
-                    }
-                }
+        for (let entry1 of this.tiles) {
+            for (let entry2 of entry1[1]) {
+                func(entry2[1]);
             }
         }
     }
@@ -54,44 +48,60 @@ export class HexMapTiles {
         tiles.map(func);
     }
 
-    addRow(right: boolean) {
-        if (right) {}
-        let topLeftTile: HexTile = this.getTopLeftTile();
-        let x: number = topLeftTile.x - 1;
-        let y: number = topLeftTile.y;
-        let height: number = this.getHeight();
-        let newRowHeight: number = 0;
-        while (height != newRowHeight) {
+    addColumn(right: boolean) {
+        let keyFindFunction = Math.min;
+        let offset = -1;
+        if (right) { 
+            keyFindFunction = Math.max;
+            offset = 1;
+        }
+        this.invertedTiles.forEach((line: Map<number, HexTile>) => {
+            let keys = line.keys();
+            let firstElement: HexTile = line.get(keyFindFunction(...keys)) !;
+
             let tile = new HexTile();
             tile.image = "nothing";
             tile.color = TileColor.NOTHING;
             tile.explored = false;
-            tile.x = x;
-            tile.y = y;
+            tile.x = firstElement.x + offset;
+            tile.y = firstElement.y;
 
-            this.add(x, y, tile);
+            this.add(tile.x, tile.y, tile);
+        });
+    }
 
-            if (newRowHeight % 2 == 0) {
-                y++;
-            } else {
-                y++;
-                x--;
-            }
-            newRowHeight++;
-
+    addRow(bottom: boolean) {
+        let keyFindFunction = Math.min;
+        let offset = -1;
+        if (bottom) { 
+            keyFindFunction = Math.max;
+            offset = 1;
         }
+        let rowKeys = this.invertedTiles.keys();
+        let rowKey = keyFindFunction(...rowKeys);
+        this.invertedTiles.get(rowKey)!.forEach((baseTile: HexTile) => {
+            let tile = new HexTile();
+            tile.image = "nothing";
+            tile.color = TileColor.NOTHING;
+            tile.explored = false;
+            tile.x = baseTile.x - offset;
+            tile.y = baseTile.y + offset;
 
-
+            this.add(tile.x, tile.y, tile);
+            
+            let secondTile = new HexTile();
+            secondTile.image = "nothing";
+            secondTile.color = TileColor.NOTHING;
+            secondTile.explored = false;
+            secondTile.x = baseTile.x - offset;
+            secondTile.y = baseTile.y + offset * 2;
+            
+            this.add(secondTile.x, secondTile.y, secondTile);
+        });
     }
 
     getWidth(): number {
-        let yKeys: number[] = Object.keys(this.invertedTiles).map(this.toInt);
-        yKeys.sort(function (a, b) { return a - b });
-
-        let xKeys: number[] = Object.keys(this.invertedTiles[yKeys[0]]).map(this.toInt);
-        xKeys.sort(function (a, b) { return a - b });
-
-        return Math.max.apply(Math, Object.keys(this.tiles)) + 1;
+        return this.getTopRightTile().x - this.getTopLeftTile().x;
     }
 
     getHeight(): number {
@@ -99,26 +109,27 @@ export class HexMapTiles {
     }
 
     getTopLeftTile(): HexTile {
-        let yKeys: number[] = Object.keys(this.invertedTiles).map(this.toInt);
-        yKeys.sort(function (a, b) { return a - b });
+        let minimumY: number = Math.min(...this.invertedTiles.keys());
 
-        let xKeys: number[] = Object.keys(this.invertedTiles[yKeys[0]]).map(this.toInt);
-        xKeys.sort(function (a, b) { return a - b });
+        let minimumX: number = Math.min(...this.invertedTiles.get(minimumY) !.keys());
 
-        return this.tiles[xKeys[0]][yKeys[0]];
+        return this.invertedTiles.get(minimumY) !.get(minimumX) !;
+    }
+
+    getTopRightTile(): HexTile {
+        let minimumY: number = Math.min(...this.invertedTiles.keys());
+
+        let maximumX: number = Math.max(...this.invertedTiles.get(minimumY) !.keys());
+
+        return this.invertedTiles.get(minimumY) !.get(maximumX) !;
     }
 
     getBottomRightTile(): HexTile {
-        let yKeys: number[] = Object.keys(this.invertedTiles).map(this.toInt);
-        yKeys.sort(function (a, b) { return a - b });
-        let lastYKey: number | undefined = yKeys.pop();
-        if (lastYKey != undefined) {
-            let xKeys: number[] = Object.keys(this.invertedTiles[lastYKey]).map(this.toInt);
-            xKeys.sort(function (a, b) { return a - b });
-            let lastXKey: number | undefined = xKeys.pop();
-            if (lastXKey != undefined) {
-                return this.tiles[lastXKey][lastYKey];
-            }
+        let maxYKey: number = Math.max(...this.invertedTiles.keys());
+        if (maxYKey != undefined) {
+            let maxXKey: number = Math.max(...this.invertedTiles.get(maxYKey) !.keys());
+            return this.tiles.get(maxXKey) !.get(maxYKey) !;
+
         }
         throw Error("Could not find the bottom right tile.");
     }

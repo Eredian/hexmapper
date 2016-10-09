@@ -41,6 +41,7 @@ document.addEventListener("touchmove", function (e: TouchEvent) {
 
 window.onload = function () {
     map = new HexMap();
+    window.map = map;
     map.resize(window.innerWidth, window.innerHeight, false);
     
     new EventHandler(map);
@@ -50,5 +51,3 @@ window.onload = function () {
     map.generateNewDefaultMap();
     map.drawMap();
 };
-
-

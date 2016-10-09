@@ -30,6 +30,9 @@ export class EventHandler {
         Mousetrap.bind('w', () => this.map.nextSelectedColor(false));
         Mousetrap.bind('s', () => this.map.nextSelectedColor(true));
         Mousetrap.bind('y', () => this.map.addColumn(false));
+        Mousetrap.bind('o', () => this.map.addColumn(true));
+        Mousetrap.bind('i', () => this.map.addRow(false));
+        Mousetrap.bind('u', () => this.map.addRow(true));
     }
 
     handleClick(func: Function, e: MouseEvent) {
