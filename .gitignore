@@ -1,4 +1,4 @@
-/images/
+frontend/img/images/*
 *.phpproj
 
 Thumbs.db

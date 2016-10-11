@@ -1,7 +1,7 @@
 module.exports = {
-    entry: "./scripts/hexmapper.ts",
+    entry: "./frontend/src/hexmapper.ts",
     output: {
-        filename: "./dist/bundle.js",
+        filename: "./frontend/dist/bundle.js",
     },
 
     // Enable sourcemaps for debugging webpack's output.
@@ -16,13 +16,10 @@ module.exports = {
         loaders: [
             // All files with a '.ts' or '.tsx' extension will be handled by 'ts-loader'.
             { test: /\.tsx?$/, loader: "babel-loader!ts-loader" },
-
-            
         ],
-
         preLoaders: [
             // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
             { test: /\.js$/, loader: "source-map-loader" }
         ]
-    },
+    }
 };

@@ -44,16 +44,13 @@ export class HexMap {
     favoriteImages: string[] = [];
     currentFavoriteImage: number = 0;
 
-    constructor() {/*
-        this.zoomLevelMap[0] = [6, 1];
-        this.zoomLevelMap[1] = [35, 3];
-        this.zoomLevelMap[2] = [80, 5];*/
+    backEndPath: string = "../backend/"
+
+    constructor() {
 
         this.zoomLevelMap[0] = new ZoomLevel(7, 11, "zoomlevel0");
         this.zoomLevelMap[1] = new ZoomLevel(30, 53, "zoomlevel1");
         this.zoomLevelMap[2] = new ZoomLevel(70, 121, "zoomlevel2");
-
-
 
         this.favoriteImages.push("nothing");
         this.favoriteImages.push("stalagmites");
@@ -137,7 +134,7 @@ export class HexMap {
 
     loadImages() {
         let xmlhttp = new XMLHttpRequest();
-        let url = "getimagenames.php";
+        let url = "img/images/list.json";
         this.baseImages = {};
         let parent = this;
         xmlhttp.onreadystatechange = function () {
@@ -145,7 +142,7 @@ export class HexMap {
                 let imageNames: [string] = JSON.parse(xmlhttp.responseText);
                 imageNames.forEach(function (element) {
                     let baseImage = new Image();
-                    baseImage.src = "images/" + element;
+                    baseImage.src = "img/images/" + element;
                     parent.baseImages[element.substr(0, element.length - 4)] = baseImage;
                 }, parent);
             }
@@ -307,7 +304,7 @@ export class HexMap {
         }
         this.loadImages();
         let xmlhttp = new XMLHttpRequest();
-        let url = "load.php?filename=" + mapName;
+        let url = this.backEndPath + "load.php?filename=" + mapName;
 
         let parent = this;
         xmlhttp.onreadystatechange = function () {
@@ -327,7 +324,7 @@ export class HexMap {
             return;
         }
         let xmlhttp = new XMLHttpRequest();
-        let url = "save.php?filename=" + mapName;
+        let url = this.backEndPath + "save.php?filename=" + mapName;
 
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
