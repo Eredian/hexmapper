@@ -44,7 +44,7 @@ export class HexMap {
     favoriteImages: string[] = [];
     currentFavoriteImage: number = 0;
 
-    backEndPath: string = "../backend/"
+    backEndPath: string = "http://localhost:8081/"
 
     constructor() {
 
@@ -229,7 +229,7 @@ export class HexMap {
             this.context.fillText(tile.x + ', ' + tile.y, XPos + this.currentZoomLevel().width / 2, YPos + this.currentZoomLevel().height / 2);
         }
     }
-    
+
     generateNewDefaultMap() {
         this.generateNewMap(this.defaultMapSize, this.defaultMapSize, this.defaultMapImage, this.defaultMapColor);
     }
@@ -304,12 +304,12 @@ export class HexMap {
         }
         this.loadImages();
         let xmlhttp = new XMLHttpRequest();
-        let url = this.backEndPath + "load.php?filename=" + mapName;
+        let url = this.backEndPath + mapName;
 
         let parent = this;
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                parent.mapTiles.setTiles(JSON.parse(xmlhttp.responseText));
+                parent.mapTiles.import(xmlhttp.responseText);
                 parent.deleteMap();
                 parent.drawMap();
             }
@@ -324,7 +324,7 @@ export class HexMap {
             return;
         }
         let xmlhttp = new XMLHttpRequest();
-        let url = this.backEndPath + "save.php?filename=" + mapName;
+        let url = this.backEndPath + mapName;
 
         xmlhttp.onreadystatechange = function () {
             if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
@@ -332,8 +332,8 @@ export class HexMap {
             }
         };
         xmlhttp.open("POST", url, true);
-        xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xmlhttp.send("data=" + JSON.stringify(this.mapTiles.tiles));
+        xmlhttp.setRequestHeader("Content-type", "application/json");
+        xmlhttp.send(this.mapTiles.export());
     }
 
     up() {
@@ -476,7 +476,7 @@ export class HexMap {
         this.mapTiles.addColumn(right);
         this.drawMap();
     }
-    
+
     addRow(bottom: boolean) {
         this.mapTiles.addRow(bottom);
         this.drawMap();

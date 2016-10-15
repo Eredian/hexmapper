@@ -7,6 +7,9 @@ tsconfig.json
 tasks.json
 .settings
 dist
+datafile
+typings
+.vscode
 
 *.js.map
 !require.js

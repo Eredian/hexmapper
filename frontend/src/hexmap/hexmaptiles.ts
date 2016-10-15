@@ -51,7 +51,7 @@ export class HexMapTiles {
     addColumn(right: boolean) {
         let keyFindFunction = Math.min;
         let offset = -1;
-        if (right) { 
+        if (right) {
             keyFindFunction = Math.max;
             offset = 1;
         }
@@ -73,13 +73,13 @@ export class HexMapTiles {
     addRow(bottom: boolean) {
         let keyFindFunction = Math.min;
         let offset = -1;
-        if (bottom) { 
+        if (bottom) {
             keyFindFunction = Math.max;
             offset = 1;
         }
         let rowKeys = this.invertedTiles.keys();
         let rowKey = keyFindFunction(...rowKeys);
-        this.invertedTiles.get(rowKey)!.forEach((baseTile: HexTile) => {
+        this.invertedTiles.get(rowKey) !.forEach((baseTile: HexTile) => {
             let tile = new HexTile();
             tile.image = "nothing";
             tile.color = TileColor.NOTHING;
@@ -88,14 +88,14 @@ export class HexMapTiles {
             tile.y = baseTile.y + offset;
 
             this.add(tile.x, tile.y, tile);
-            
+
             let secondTile = new HexTile();
             secondTile.image = "nothing";
             secondTile.color = TileColor.NOTHING;
             secondTile.explored = false;
             secondTile.x = baseTile.x - offset;
             secondTile.y = baseTile.y + offset * 2;
-            
+
             this.add(secondTile.x, secondTile.y, secondTile);
         });
     }
@@ -148,5 +148,20 @@ export class HexMapTiles {
 
     toInt(string: string) {
         return parseInt(string);
+    }
+
+    export() {
+        let tilesArray: HexTile[] = [];
+        this.forEach((tile: HexTile) => {
+            tilesArray.push(tile);
+        })
+        return JSON.stringify(tilesArray);
+    }
+
+    import(tileData: string) {
+        let tilesArray: HexTile[] = JSON.parse(tileData).tiles;
+        tilesArray.forEach((tile: HexTile) => {
+            this.add(tile.x, tile.y, tile);
+        });
     }
 }
