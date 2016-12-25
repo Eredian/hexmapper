@@ -1,8 +1,10 @@
-import { HexTile } from "./hextile";
-import { HexMapTiles } from "./hexmaptiles";
-import { TileColor } from "./tilecolor";
-import { ZoomLevel } from "./zoomlevel";
-import { utils } from "../utils/urlobject";
+import { SaveAsModal } from './saveasmodal';
+import { LoadMapModal } from './loadmapmodal';
+import { HexTile } from './hextile';
+import { HexMapTiles } from './hexmaptiles';
+import { TileColor } from './tilecolor';
+import { ZoomLevel } from './zoomlevel';
+import { utils } from '../utils/urlobject';
 
 export enum ColumnPosition {
     LEFT,
@@ -297,43 +299,46 @@ export class HexMap {
         }
     }
 
-    load() {
-        let mapName: string | null = prompt("Enter map name.");
-        if (mapName == null) {
-            return;
-        }
-        this.loadImages();
-        let xmlhttp = new XMLHttpRequest();
-        let url = this.backEndPath + mapName;
-
-        let parent = this;
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                parent.mapTiles.import(xmlhttp.responseText);
-                parent.deleteMap();
-                parent.drawMap();
-            }
-        };
-        xmlhttp.open("GET", url, true);
-        xmlhttp.send();
+    async getSavedMapNames(): Promise<string[]> {
+        let response = await fetch(this.backEndPath);
+        let mapNames: string[] = JSON.parse(await response.text());
+        return mapNames;
     }
 
-    save() {
-        let mapName: string | null = prompt("Enter map name.");
+    async load() {
+        let modal = new LoadMapModal(await this.getSavedMapNames());
+        let mapName = await modal.waitOnModal();
+
+        this.loadImages();
+
+        let url = this.backEndPath + mapName;
+        let mapResponse = await fetch(url);
+        let json = await mapResponse.text();
+
+        this.mapTiles.import(json);
+        this.deleteMap();
+        this.drawMap();
+    }
+
+    async save() {
+        let modal = new SaveAsModal();
+        let mapName = await modal.waitOnModal();
+
         if (mapName == null) {
             return;
         }
-        let xmlhttp = new XMLHttpRequest();
         let url = this.backEndPath + mapName;
 
-        xmlhttp.onreadystatechange = function () {
-            if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-                alert(xmlhttp.responseText);
-            }
-        };
-        xmlhttp.open("POST", url, true);
-        xmlhttp.setRequestHeader("Content-type", "application/json");
-        xmlhttp.send(this.mapTiles.export());
+        let response = await fetch(url, {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: this.mapTiles.export()
+        });
+
+        alert(response);
     }
 
     up() {

@@ -4,20 +4,29 @@
   "private": true,
   "dependencies": {
     "body-parser": "^1.15.2",
-    "nedb": "^1.8.0"
+    "browser-request": "^0.3.3",
+    "exports-loader": "^0.6.3",
+    "imports-loader": "^0.6.5",
+    "nedb": "^1.8.0",
+    "request": "^2.75.0",
+    "request-promise-native": "^1.0.3",
+    "source-map-loader": "^0.1.5",
+    "web-request": "^1.0.6",
+    "whatwg-fetch": "^1.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.17.0",
     "babel-loader": "^6.2.5",
+    "babel-polyfill": "^6.16.0",
     "babel-preset-es2015": "^6.16.0",
+    "babel-preset-stage-0": "^6.16.0",
     "express": "^4.14.0",
     "fs": "0.0.1-security",
     "script-loader": "^0.7.0",
     "ts-loader": "^0.8.2",
-    "typescript": "^2.0.3",
     "webpack": "^1.13.2"
   },
   "scripts": {
-    "start": "devtool ./backend/main.js --watch"
+    "start": "nodemon --harmony --debug ./backend/main.js"
   }
 }

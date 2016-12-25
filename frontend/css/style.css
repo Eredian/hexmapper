@@ -13,6 +13,37 @@ body {
     padding: 0;
 }
 
+.modal p {
+    padding: 5px 0;
+}
+
+.modal button {
+    font-size: 1em;
+    padding: 0 5px;
+    margin: 2px 5px;
+}
+.modalRoot {
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0,0,0,0.5);
+    position: absolute;
+    z-index: 99999;
+}
+
+.modal {
+    top: 50%;
+    position: absolute;
+    text-align: center;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #a5783d;
+    font-size: 2em;
+    padding: 10px;
+    border-radius: 25px;
+}
+
 #selectorList {
     position: absolute;
     top: 0;

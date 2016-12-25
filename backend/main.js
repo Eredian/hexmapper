@@ -17,6 +17,7 @@ app.get('/', async (req, res) => {
     let documentList = await db.find({}, { name: 1 }).catch(e => res.status(500).json({ message: e.message }));
 
     if (documentList) {
+        documentList = documentList.map(elem => elem._id);
         res.send(documentList);
     }
 });

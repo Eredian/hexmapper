@@ -6,5 +6,6 @@
         "bower_components",
         "dist"
     ],
-    "typescript.validate.enable": true
+    "typescript.validate.enable": true,
+    "typescript.check.workspaceVersion": false
 }
