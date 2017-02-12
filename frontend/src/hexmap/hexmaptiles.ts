@@ -1,6 +1,6 @@
-import { TileColor } from './tilecolor';
-import { HexTile } from './hextile';
-import { OperateOnTile } from './operateontile';
+import { TileColor } from "./enums/tilecolor";
+import { HexTile } from "./models/hextile";
+import { OperateOnTile } from "./interfaces/operateontile";
 
 export class HexMapTiles {
     // First key is x and second key y

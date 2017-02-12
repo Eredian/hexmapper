@@ -1,4 +1,4 @@
-import { TileColor } from './tilecolor';
+import { TileColor } from "../enums/tilecolor";
 export class UserSettings {
     selectedImage: string;
     selectedColor: TileColor;

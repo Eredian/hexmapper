@@ -1,12 +1,12 @@
-import { UserSettings } from './usersettings';
+import { UserSettings } from "./models/usersettings";
 import { MapDrawer } from './mapdrawer';
 import { Configuration } from './configuration';
-import { SaveAsModal } from './saveasmodal';
-import { LoadMapModal } from './loadmapmodal';
-import { CreateMapModal } from './createmapmodal';
-import { HexTile } from './hextile';
+import { SaveAsModal } from "./modals/saveasmodal";
+import { LoadMapModal } from "./modals/loadmapmodal";
+import { CreateMapModal } from "./modals/createmapmodal";
+import { HexTile } from "./models/hextile";
 import { HexMapTiles } from './hexmaptiles';
-import { TileColor } from './tilecolor';
+import { TileColor } from "./enums/tilecolor";
 
 export enum ColumnPosition {
     LEFT,

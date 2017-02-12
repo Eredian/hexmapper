@@ -1,5 +1,5 @@
-import {BorderColor} from './bordercolor';
-import {TileColor} from './tilecolor';
+import {BorderColor} from "./enums/bordercolor";
+import {TileColor} from "./enums/tilecolor";
 
 export class ZoomLevel {
     width: number;

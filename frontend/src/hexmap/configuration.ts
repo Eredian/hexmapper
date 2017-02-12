@@ -1,4 +1,4 @@
-import { TileColor } from './tilecolor';
+import { TileColor } from "./enums/tilecolor";
 import { Mode } from './hexmap';
 import { ZoomLevel } from './zoomlevel';
 import { utils } from '../utils/urlobject';

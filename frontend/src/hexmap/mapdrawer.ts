@@ -1,9 +1,9 @@
 import { Mode } from './hexmap';
 import { HexMapTiles } from './hexmaptiles';
-import { UserSettings } from './usersettings';
-import { HexTile } from './hextile';
+import { UserSettings } from "./models/usersettings";
+import { HexTile } from "./models/hextile";
 import { Configuration } from './configuration';
-import { TileColor } from './tilecolor';
+import { TileColor } from "./enums/tilecolor";
 
 export class MapDrawer {
     hexSideLength: number;

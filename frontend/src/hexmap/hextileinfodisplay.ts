@@ -1,4 +1,4 @@
-import {HexTile} from './hextile';
+import {HexTile} from "./models/hextile";
 
 export class HexTileInfoDisplay {
     tile: HexTile;

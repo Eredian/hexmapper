@@ -1,5 +1,5 @@
-import {TileColor} from './tilecolor';
-import {BorderColor} from './bordercolor';
+import {TileColor} from "../enums/tilecolor";
+import {BorderColor} from "../enums/bordercolor";
 import {HexTileInfo} from './hextileinfo';
 
 export class HexTile {
