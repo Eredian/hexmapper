@@ -164,4 +164,9 @@ export class HexMapTiles {
             this.add(tile.x, tile.y, tile);
         });
     }
+
+    clear() {
+        this.tiles = new Map<number, Map<number, HexTile>>();
+        this.invertedTiles = new Map<number, Map<number, HexTile>>();
+    }
 }
