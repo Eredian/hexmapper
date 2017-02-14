@@ -1,15 +1,12 @@
-import { TileColor } from "./enums/tilecolor";
 import { HexTile } from "./models/hextile";
 import { OperateOnTile } from "./interfaces/operateontile";
 
 export class HexMapTiles {
-    // First key is x and second key y
-    tiles: Map<number, Map<number, HexTile>>;
-    invertedTiles: Map<number, Map<number, HexTile>>;
+    private tiles: Map<number, Map<number, HexTile>> = new Map<number, Map<number, HexTile>>();
+    private invertedTiles: Map<number, Map<number, HexTile>> = new Map<number, Map<number, HexTile>>();
 
-    constructor() {
-        this.tiles = new Map<number, Map<number, HexTile>>();
-        this.invertedTiles = new Map<number, Map<number, HexTile>>();
+    constructor(defaultTile: HexTile, width: number, height: number) {
+        this.initialize(defaultTile, width, height)
     }
 
     add(x: number, y: number, value: HexTile): void {
@@ -48,7 +45,7 @@ export class HexMapTiles {
         tiles.map(func);
     }
 
-    addColumn(right: boolean) {
+    addColumn(right: boolean, defaultTile: HexTile) {
         let keyFindFunction = Math.min;
         let offset = -1;
         if (right) {
@@ -60,9 +57,9 @@ export class HexMapTiles {
             let firstElement: HexTile = line.get(keyFindFunction(...keys)) !;
 
             let tile = new HexTile();
-            tile.image = "nothing";
-            tile.color = TileColor.NOTHING;
-            tile.explored = false;
+            tile.image = defaultTile.image;
+            tile.color = defaultTile.color;
+            tile.explored = defaultTile.explored;
             tile.x = firstElement.x + offset;
             tile.y = firstElement.y;
 
@@ -70,7 +67,7 @@ export class HexMapTiles {
         });
     }
 
-    addRow(bottom: boolean) {
+    addRow(bottom: boolean, defaultTile: HexTile) {
         let keyFindFunction = Math.min;
         let offset = -1;
         if (bottom) {
@@ -81,18 +78,18 @@ export class HexMapTiles {
         let rowKey = keyFindFunction(...rowKeys);
         this.invertedTiles.get(rowKey) !.forEach((baseTile: HexTile) => {
             let tile = new HexTile();
-            tile.image = "nothing";
-            tile.color = TileColor.NOTHING;
-            tile.explored = false;
+            tile.image = defaultTile.image;
+            tile.color = defaultTile.color;
+            tile.explored = defaultTile.explored;
             tile.x = baseTile.x - offset;
             tile.y = baseTile.y + offset;
 
             this.add(tile.x, tile.y, tile);
 
             let secondTile = new HexTile();
-            secondTile.image = "nothing";
-            secondTile.color = TileColor.NOTHING;
-            secondTile.explored = false;
+            tile.image = defaultTile.image;
+            tile.color = defaultTile.color;
+            tile.explored = defaultTile.explored;
             secondTile.x = baseTile.x - offset;
             secondTile.y = baseTile.y + offset * 2;
 
@@ -134,35 +131,48 @@ export class HexMapTiles {
         throw Error("Could not find the bottom right tile.");
     }
 
-    setTiles(tiles: { [key: number]: { [key: number]: HexTile } }) {
-        for (var key1 in tiles) {
-            if (tiles.hasOwnProperty(key1)) {
-                for (var key2 in tiles[key1]) {
-                    if (tiles[key1].hasOwnProperty(key2)) {
-                        this.add(+key1, +key2, tiles[key1][key2]);
-                    }
+    initialize(defaultTile: HexTile, width: number, height: number) {
+        this.clear();
+        for (var column = 0; column < width; column++) {
+            let x = column;
+            let y = 0;
+
+            for (var row = 0; row < height; row++) {
+                let tile = new HexTile();
+                tile.image = defaultTile.image;
+                tile.color = defaultTile.color;
+                tile.explored = defaultTile.explored;
+                tile.x = x;
+                tile.y = y;
+
+                this.add(x, y, tile);
+
+                if (row % 2 == 0) {
+                    y++;
+                } else {
+                    y++;
+                    x--;
                 }
             }
         }
     }
 
-    toInt(string: string) {
-        return parseInt(string);
-    }
-
-    export() {
+    exportAsTileArray(): HexTile[] {
         let tilesArray: HexTile[] = [];
         this.forEach((tile: HexTile) => {
             tilesArray.push(tile);
         })
-        return JSON.stringify(tilesArray);
+        return tilesArray
     }
 
-    import(tileData: string) {
-        let tilesArray: HexTile[] = JSON.parse(tileData).tiles;
-        tilesArray.forEach((tile: HexTile) => {
-            this.add(tile.x, tile.y, tile);
+    static createFromTileArray(tiles: HexTile[]): HexMapTiles {
+        let object: HexMapTiles = Object.create(HexMapTiles.prototype)
+        object.tiles = new Map<number, Map<number, HexTile>>();
+        object.invertedTiles = new Map<number, Map<number, HexTile>>();
+        tiles.forEach((tile: HexTile) => {
+            object.add(tile.x, tile.y, tile);
         });
+        return object
     }
 
     clear() {

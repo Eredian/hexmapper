@@ -1,21 +1,21 @@
-import { TileColor } from "./enums/tilecolor";
+import { TileColor } from './models/tilecolor';
 import { Mode } from './hexmap';
-import { ZoomLevel } from './zoomlevel';
-import { utils } from '../utils/urlobject';
+import { ZoomLevel } from './models/zoomlevel';
 
 export class Configuration {
 
-    zoomLevelMap: { [key: number]: ZoomLevel } = {};
+    zoomLevelMap: ZoomLevel[] = [];
     mode: Mode = Mode.EXPLORE;
     favoriteImages: string[] = [];
     defaultMapImage: string;
-    defaultMapColor: TileColor = TileColor.CAVERN_GROUND;
+    defaultMapColor: TileColor;
+    defaultMapColors: TileColor[]
     defaultMapSize: number = 50;
 
     constructor() {
-        this.zoomLevelMap[0] = new ZoomLevel(7, 11, "zoomlevel0");
-        this.zoomLevelMap[1] = new ZoomLevel(30, 53, "zoomlevel1");
-        this.zoomLevelMap[2] = new ZoomLevel(70, 121, "zoomlevel2");
+        this.zoomLevelMap.push(new ZoomLevel(7, 11, "zoomlevel0"));
+        this.zoomLevelMap.push(new ZoomLevel(30, 53, "zoomlevel1"));
+        this.zoomLevelMap.push(new ZoomLevel(70, 121, "zoomlevel2"));
 
         this.favoriteImages.push("nothing");
         this.favoriteImages.push("stalagmites");
@@ -45,12 +45,25 @@ export class Configuration {
         this.favoriteImages.push("tower");
         this.favoriteImages.push("waystation");
 
+        this.defaultMapColors = []
+        this.defaultMapColors.push(new TileColor(0, "Unexplored", 255, 204, 102))
+        this.defaultMapColors.push(new TileColor(1, "Nothing", 0, 0, 0))
+        this.defaultMapColors.push(new TileColor(2, "Water", 25, 25, 170))
+        this.defaultMapColors.push(new TileColor(3, "Lava", 255, 55, 20))
+        this.defaultMapColors.push(new TileColor(4, "Grass", 40, 200, 40))
+        this.defaultMapColor = this.defaultMapColors[4]
+
         this.defaultMapImage = this.favoriteImages[0];
 
-        if (utils.urlObject({})["parameters"]["mode"] == "edit") {
+        if (window.location.href.endsWith("edit")) {
             this.mode = Mode.EDIT;
         } else {
             this.mode = Mode.EXPLORE;
         }
     }
 }
+
+
+/** WEBPACK FOOTER **
+ ** ./src/hexmap/configuration.ts
+ **/

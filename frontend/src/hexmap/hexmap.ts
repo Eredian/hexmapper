@@ -1,3 +1,5 @@
+import { MapSettings } from "./models/mapsettings";
+import { MapData } from "./models/mapdata";
 import { UserSettings } from "./models/usersettings";
 import { MapDrawer } from './mapdrawer';
 import { Configuration } from './configuration';
@@ -6,7 +8,7 @@ import { LoadMapModal } from "./modals/loadmapmodal";
 import { CreateMapModal } from "./modals/createmapmodal";
 import { HexTile } from "./models/hextile";
 import { HexMapTiles } from './hexmaptiles';
-import { TileColor } from "./enums/tilecolor";
+import { TileColor } from "./models/tilecolor";
 
 export enum ColumnPosition {
     LEFT,
@@ -19,25 +21,23 @@ export enum Mode {
 }
 
 export class HexMap {
-    mapTiles: HexMapTiles = new HexMapTiles();
-    userSettings: UserSettings = new UserSettings()
+    private mapData: MapData;
+    private mapTiles: HexMapTiles;
+    private userSettings: UserSettings = new UserSettings()
 
-    canvas = <HTMLCanvasElement>document.getElementById("canvas");
-    context = <CanvasRenderingContext2D>this.canvas.getContext("2d");
+    private canvas = <HTMLCanvasElement>document.getElementById("canvas");
 
-    mouseHeld: boolean = false;
-    previousMouseMove: number[] = [];
+    private mouseHeld: boolean = false;
+    private previousMouseMove: number[] = [];
 
-    mapName: string;
+    private mapName: string;
 
-    backEndPath: string = "http://localhost:8081/"
+    private backEndPath: string = "http://localhost:8081/"
 
-    configuration: Configuration = new Configuration()
-    mapDrawer: MapDrawer
+    private configuration: Configuration = new Configuration()
+    private mapDrawer: MapDrawer
 
     constructor() {
-        this.mapDrawer = new MapDrawer(this.configuration, this.userSettings, this.mapTiles)
-
         this.userSettings.selectedImage = this.configuration.defaultMapImage
         this.userSettings.selectedColor = this.configuration.defaultMapColor
 
@@ -76,29 +76,13 @@ export class HexMap {
     }
 
     generateNewMap(width: number, height: number, tileClassName: string, colorClassName: TileColor) {
-        this.mapTiles.clear();
-        for (var column = 0; column < width; column++) {
-            let x = column;
-            let y = 0;
-
-            for (var row = 0; row < height; row++) {
-                let tile = new HexTile();
-                tile.image = tileClassName;
-                tile.color = colorClassName;
-                tile.explored = false;
-                tile.x = x;
-                tile.y = y;
-
-                this.mapTiles.add(x, y, tile);
-
-                if (row % 2 == 0) {
-                    y++;
-                } else {
-                    y++;
-                    x--;
-                }
-            }
-        }
+        let tile = new HexTile();
+        tile.image = tileClassName;
+        tile.color = colorClassName.id;
+        tile.explored = false;
+        this.mapData = new MapData(new HexMapTiles(tile, width, height), new MapSettings(), this.configuration.defaultMapColors);
+        this.mapTiles = this.mapData.tiles;
+        this.mapDrawer = new MapDrawer(this.configuration, this.userSettings, this.mapData)
     }
 
     selectHex(hexName: string, colorName: TileColor) {
@@ -127,7 +111,7 @@ export class HexMap {
 
     changeTile(tile: HexTile) {
         tile.image = this.userSettings.selectedImage;
-        tile.color = this.userSettings.selectedColor;
+        tile.color = this.userSettings.selectedColor.id;
         this.drawTile(tile);
     }
 
@@ -161,7 +145,10 @@ export class HexMap {
         let mapResponse = await fetch(url);
         let json = await mapResponse.text();
 
-        this.mapTiles.import(json);
+        this.mapData = MapData.createFromJSON(json)
+        this.mapTiles = this.mapData.tiles;
+        this.mapDrawer = new MapDrawer(this.configuration, this.userSettings, this.mapData)
+
         this.deleteMap();
         this.drawMap();
     }
@@ -181,7 +168,7 @@ export class HexMap {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
-            body: this.mapTiles.export()
+            body: this.mapData.exportAsJSON()
         });
 
         alert(response);
@@ -254,17 +241,19 @@ export class HexMap {
         this.drawHexSelector();
     }
     nextSelectedColor(next: boolean) {
+        let tileColors = this.mapData.tileColors
+        let currentSelectedColor = this.userSettings.selectedColor
         if (next) {
-            if (this.userSettings.selectedColor == TileColor.NOTHING) {
-                this.userSettings.selectedColor = 0;
+            if (currentSelectedColor == tileColors.slice(-1)[0]) {
+                this.userSettings.selectedColor = tileColors[0];
             } else {
-                this.userSettings.selectedColor++;
+                this.userSettings.selectedColor = tileColors[tileColors.indexOf(currentSelectedColor) + 1];
             }
         } else {
-            if (this.userSettings.selectedColor == 0) {
-                this.userSettings.selectedColor = 4;
+            if (currentSelectedColor == tileColors[0]) {
+                this.userSettings.selectedColor = tileColors.slice(-1)[0];
             } else {
-                this.userSettings.selectedColor--;
+                this.userSettings.selectedColor = tileColors[tileColors.indexOf(currentSelectedColor) - 1];
             }
         }
         this.userSettings.selectedImage = this.configuration.favoriteImages[this.userSettings.currentFavoriteImage];
@@ -273,18 +262,28 @@ export class HexMap {
 
     drawHexSelector() {
         let selector: HexTile = new HexTile();
-        selector.color = this.userSettings.selectedColor;
+        selector.color = this.userSettings.selectedColor.id;
         selector.image = this.userSettings.selectedImage;
         this.drawTile(selector, true);
     }
 
     addColumn(right: boolean) {
-        this.mapTiles.addColumn(right);
+        let tile = new HexTile();
+        tile.image = this.configuration.defaultMapImage;
+        tile.color = this.configuration.defaultMapColor.id;
+        tile.explored = false;
+
+        this.mapTiles.addColumn(right, tile);
         this.drawMap();
     }
 
     addRow(bottom: boolean) {
-        this.mapTiles.addRow(bottom);
+        let tile = new HexTile();
+        tile.image = this.configuration.defaultMapImage;
+        tile.color = this.configuration.defaultMapColor.id;
+        tile.explored = false;
+
+        this.mapTiles.addRow(bottom, tile);
         this.drawMap();
     }
 

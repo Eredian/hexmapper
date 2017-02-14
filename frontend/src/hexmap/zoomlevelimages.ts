@@ -1,24 +1,21 @@
-import {BorderColor} from "./enums/bordercolor";
-import {TileColor} from "./enums/tilecolor";
+import { ZoomLevel } from './models/zoomlevel';
+import { TileColor } from './models/tilecolor';
+import { BorderColor } from "./enums/bordercolor";
 
-export class ZoomLevel {
+export class ZoomLevelImages {
+    zoomLevel: ZoomLevel;
     width: number;
     height: number;
-    halfWidth: number;
-    halfHeight: number;
-    filePath: string;
     ready: boolean = false;
+
+    private hiddenCanvas: HTMLCanvasElement = document.createElement("canvas");
+    private hiddenCanvasContext: CanvasRenderingContext2D;
 
     colorMap: { [key: number]: HTMLImageElement } = {};
     borderColorMap: { [key: number]: HTMLImageElement } = {};
 
-    hiddenCanvas: HTMLCanvasElement = document.createElement("canvas");
-    hiddenCanvasContext: CanvasRenderingContext2D;
-
-    constructor(halfWidth: number, halfHeight: number, filePath: string) {
-        this.halfWidth = halfWidth;
-        this.halfHeight = halfHeight;
-        this.filePath = filePath;
+    constructor(zoomLevel: ZoomLevel, colorMap: TileColor[]) {
+        this.zoomLevel = zoomLevel;
 
         let canvasContext = this.hiddenCanvas.getContext("2d");
         if (canvasContext === null) {
@@ -35,14 +32,11 @@ export class ZoomLevel {
             this.hiddenCanvasContext.drawImage(img, 0, 0);
             let baseHexImage = this.hiddenCanvasContext.getImageData(0, 0, img.width, img.height);
 
-            this.colorMap[TileColor.CAVERN_GROUND] = this.generateColorImage(180, 180, 180, baseHexImage);
-            this.colorMap[TileColor.NOTHING] = this.generateColorImage(0, 0, 0, baseHexImage);
-            this.colorMap[TileColor.MURKY_WATER] = this.generateColorImage(25, 25, 170, baseHexImage);
-            this.colorMap[TileColor.SWAMP_RIVER] = this.generateColorImage(45, 75, 200, baseHexImage);
-            this.colorMap[TileColor.LAVA] = this.generateColorImage(255, 55, 20, baseHexImage);
-            this.colorMap[TileColor.UNEXPLORED] = this.generateColorImage(255, 204, 102, baseHexImage);
+            colorMap.forEach((value: TileColor, key: number) => {
+                this.colorMap[key] = this.generateColorImage(value.R, value.G, value.B, baseHexImage);
+            })
         }
-        img.src = 'img/' + filePath + '/hex.png';
+        img.src = 'img/' + this.zoomLevel.filePath + '/hex.png';
 
         let borderImg = new Image();
         borderImg.onload = () => {
@@ -60,10 +54,10 @@ export class ZoomLevel {
             this.borderColorMap[BorderColor.CR6] = this.generateColorImage(255, 0, 0, baseBorderImage);
             this.ready = true;
         }
-        borderImg.src = 'img/' + filePath + '/hexborder.png';
+        borderImg.src = 'img/' + this.zoomLevel.filePath + '/hexborder.png';
     }
 
-    generateColorImage(R: number, G: number, B: number, baseImage: ImageData) {
+    private generateColorImage(R: number, G: number, B: number, baseImage: ImageData) {
         let imageData = this.hiddenCanvasContext.createImageData(baseImage.width, baseImage.height);
         imageData.data.set(baseImage.data);
         let data = imageData.data;

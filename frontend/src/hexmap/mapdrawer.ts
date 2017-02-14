@@ -1,35 +1,42 @@
+import { ZoomLevel } from './models/zoomlevel';
+import { MapData } from './models/mapdata';
+import { ZoomLevelImages } from './zoomlevelimages';
 import { Mode } from './hexmap';
 import { HexMapTiles } from './hexmaptiles';
 import { UserSettings } from "./models/usersettings";
 import { HexTile } from "./models/hextile";
 import { Configuration } from './configuration';
-import { TileColor } from "./enums/tilecolor";
 
 export class MapDrawer {
-    hexSideLength: number;
-    hexHeight: number;
-    baseXPos: number = 0;
-    baseYPos: number = 0;
+    private hexSideLength: number;
+    private hexHeight: number;
+    private baseXPos: number = 0;
+    private baseYPos: number = 0;
 
-    zoomLevel: number = 1;
-    configuration: Configuration
-    userSettings: UserSettings
-    mapTiles: HexMapTiles = new HexMapTiles();
+    private zoomLevel: number = 1;
+    private configuration: Configuration
+    private userSettings: UserSettings
+    private mapTiles: HexMapTiles;
+    private zoomLevelImages: ZoomLevelImages[] = []
 
-    canvas = <HTMLCanvasElement>document.getElementById("canvas");
-    context = <CanvasRenderingContext2D>this.canvas.getContext("2d");
-    baseImages: { [key: string]: HTMLImageElement };
+    private canvas = <HTMLCanvasElement>document.getElementById("canvas");
+    private context = <CanvasRenderingContext2D>this.canvas.getContext("2d");
+    private baseImages: { [key: string]: HTMLImageElement };
 
-    constructor(configuration: Configuration, userSettings: UserSettings, mapTiles: HexMapTiles) {
+    constructor(configuration: Configuration, userSettings: UserSettings, mapData: MapData) {
         this.configuration = configuration
         this.userSettings = userSettings;
-        this.mapTiles = mapTiles
+        this.mapTiles = mapData.tiles
+
+        this.configuration.zoomLevelMap.forEach((zoomLevel: ZoomLevel) => {
+            this.zoomLevelImages.push(new ZoomLevelImages(zoomLevel, mapData.tileColors))
+        })
 
         this.updateHexDimensions();
         this.loadImages();
     }
 
-    loadImages() {
+    private loadImages() {
         let xmlhttp = new XMLHttpRequest();
         let url = "img/images/list.json";
         this.baseImages = {};
@@ -48,7 +55,7 @@ export class MapDrawer {
         xmlhttp.send();
     }
 
-    updateHexDimensions() {
+    private updateHexDimensions() {
         this.hexSideLength = 35;
         this.hexHeight = 2 * this.hexSideLength;
     }
@@ -134,7 +141,7 @@ export class MapDrawer {
         if (explored) {
             this.context.drawImage(this.currentZoomLevel().colorMap[tile.color], XPos, YPos);
         } else {
-            this.context.drawImage(this.currentZoomLevel().colorMap[TileColor.UNEXPLORED], XPos, YPos);
+            this.context.drawImage(this.currentZoomLevel().colorMap[0], XPos, YPos);
         }
 
         if (this.currentZoomLevel().width > 20) {
@@ -157,13 +164,13 @@ export class MapDrawer {
 
     drawHexSelector() {
         let selector: HexTile = new HexTile();
-        selector.color = this.userSettings.selectedColor;
+        selector.color = this.userSettings.selectedColor.id;
         selector.image = this.userSettings.selectedImage;
         this.drawTile(selector, true);
     }
 
-    currentZoomLevel() {
-        return this.configuration.zoomLevelMap[this.zoomLevel];
+    currentZoomLevel(): ZoomLevelImages {
+        return this.zoomLevelImages[this.zoomLevel];
     }
 
     changeMapPosition(x: number, y: number) {
@@ -173,22 +180,22 @@ export class MapDrawer {
         this.drawMap();
     }
 
-    pixel_to_hex(x: number, y: number) {
+    private pixel_to_hex(x: number, y: number) {
         x -= this.currentZoomLevel().width / 2;
         y -= this.currentZoomLevel().height / 2;
-        let r = y / this.currentZoomLevel().halfHeight;
-        let q = (x - r * this.currentZoomLevel().halfWidth) / this.currentZoomLevel().width;
+        let r = y / this.currentZoomLevel().zoomLevel.halfHeight;
+        let q = (x - r * this.currentZoomLevel().zoomLevel.halfWidth) / this.currentZoomLevel().width;
         let hexPosition = this.hex_round(q, r);
         return this.mapTiles.get(hexPosition[0], hexPosition[1]);
     }
 
-    hex_to_pixel(tile: HexTile) {
-        let x = this.currentZoomLevel().width * tile.x + tile.y * this.currentZoomLevel().halfWidth;
-        let y = this.currentZoomLevel().halfHeight * tile.y;
+    private hex_to_pixel(tile: HexTile) {
+        let x = this.currentZoomLevel().width * tile.x + tile.y * this.currentZoomLevel().zoomLevel.halfWidth;
+        let y = this.currentZoomLevel().zoomLevel.halfHeight * tile.y;
         return { "x": Math.floor(x), "y": Math.floor(y) };
     }
 
-    hex_round(q: number, r: number) {
+    private hex_round(q: number, r: number) {
         let x: number = q;
         let z: number = r;
         let y: number = -x - z;
