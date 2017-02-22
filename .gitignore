@@ -1,5 +1,4 @@
 frontend/img/images/*
-*.phpproj
 
 Thumbs.db
 maps*
@@ -10,6 +9,7 @@ dist
 datafile
 typings
 .vscode
+config.js
 
 *.js.map
 !require.js

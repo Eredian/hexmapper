@@ -1,0 +1,11 @@
+var config = {};
+
+config.oauth = {};
+config.oauth.clientId = "";
+config.oauth.clientSecret = "";
+config.oauth.redirectUri = "";
+
+config.jwt = {}
+config.jwt.secret = ""
+
+module.exports = config;

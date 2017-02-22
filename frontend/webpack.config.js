@@ -1,6 +1,9 @@
 var webpack = require('webpack');
 
 module.exports = {
+    node: {
+        fs: "empty"
+    },
     entry: ["babel-polyfill", "./src/hexmapper.ts"],
     output: {
         filename: "./dist/bundle.js",

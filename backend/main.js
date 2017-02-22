@@ -1,19 +1,93 @@
 var express = require('express');
 var bodyParser = require('body-parser');
 var Datastore = require('nedb-promise');
-
-var app = express();
-app.use(bodyParser.json({ limit: '50mb' })); // for parsing application/json
-app.use(function (req, res, next) {
-    res.header("Access-Control-Allow-Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
-    next();
-});
+var config = require('./config.js')
+var GoogleStrategy = require('passport-google-oauth20').Strategy;
+var passport = require('passport')
+var jwt = require('jsonwebtoken');
 
 var db = new Datastore({ filename: './datafile', autoload: true });
 
-app.get('/', async (req, res) => {
-    let id = req.params.id;
+passport.use(new GoogleStrategy({
+    clientID: config.oauth.clientId,
+    clientSecret: config.oauth.clientSecret,
+    callbackURL: config.oauth.redirectUri
+},
+    function (accessToken, refreshToken, profile, cb) {
+        cb(null, profile);
+    }
+));
+
+passport.serializeUser(function (user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function (user, done) {
+    done(null, user);
+});
+
+var app = express();
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '50mb' }));
+app.use(function (req, res, next) {
+    res.header("Access-Control-Allow-Origin", "*");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization");
+    next();
+});
+
+app.use(passport.initialize());
+
+app.get('/auth/authorize', function (req, res, next) {
+    passport.authenticate('google', {
+        scope: [
+            'https://www.googleapis.com/auth/userinfo.profile',
+            'https://www.googleapis.com/auth/userinfo.email'
+        ],
+        state: req.query.redirect
+    })(req, res, next)
+});
+
+app.get('/auth/oauthcallback', function (req, res, next) {
+    passport.authenticate('google', { failureRedirect: '/auth/failure' }, function (err, user, info) {
+        if (err) {
+            console.log(err)
+            res.sendStatus(500)
+        } else if (!user) {
+            return res.status(401).json({ status: 'error', code: 'unauthorized' });
+        } else {
+            var token = jwt.sign({ data: user.emails[0].value }, config.jwt.secret, {
+                expiresIn: "1d"
+            })
+            var messageUri = req.query.state
+            var message = JSON.stringify({ token: token, name: user.displayName, photo: user.photos[0].value })
+            res.send(`<script type="text/javascript">window.opener.postMessage(\`${message}\`, "${messageUri})");` +
+                `window.close()</script>`)
+        }
+    })(req, res, next)
+})
+
+app.use(function (req, res, next) {
+    if (req.method == "OPTIONS") {
+        return next()
+    }
+    if (req.headers.authorization) {
+        var auth = req.headers.authorization;
+        if (auth && auth.startsWith("Bearer ")) {
+            var token = auth.slice(7)
+            var decodedToken = jwt.verify(token, config.jwt.secret)
+            req.user = decodedToken.data
+        }
+    }
+    if (req.user) {
+        return next();
+    } else {
+        return res.status(401).json({ status: 'error', code: 'unauthorized' });
+    }
+});
+
+
+app.get('/map', async (req, res) => {
     let documentList = await db.find({}, { name: 1 }).catch(e => res.status(500).json({ message: e.message }));
 
     if (documentList) {
@@ -22,9 +96,10 @@ app.get('/', async (req, res) => {
     }
 });
 
-app.get('/:id', async (req, res) => {
+app.get('/map/:id', async (req, res) => {
+
     let id = req.params.id;
-    let document = await db.findOne({ "_id": id }).catch(e => res.status(500).json({ message: e.message }));
+    let document = await db.findOne({ "_id": id, "owner": req.user }).catch(e => res.status(500).json({ message: e.message }));
 
     if (!document) {
         res.status(404).send("Map not found.");
@@ -33,12 +108,12 @@ app.get('/:id', async (req, res) => {
     }
 });
 
-app.post('/:id', async (req, res) => {
+app.post('/map/:id', async (req, res) => {
     let id = req.params.id;
     let body = req.body;
 
     try {
-        var updateResult = await db.update({ _id: id }, { _id: id, tiles: body }, { upsert: true });
+        var updateResult = await db.update({ _id: id }, { _id: id, tiles: body, owner: req.user }, { upsert: true });
     } catch (error) {
         res.status(500).json({ message: error.message });
         return;

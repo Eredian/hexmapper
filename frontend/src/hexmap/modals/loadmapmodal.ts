@@ -1,4 +1,20 @@
 import { Modal } from './modal';
+import * as doT from 'dot'
+
+let template = doT.template(
+`<div class="modalBody">
+    <p>Choose a map name.</p>
+    <form>
+        <select id="mapNameSelect">
+        {{~it.options :value:index}}
+            <option value="{{=value}}">{{=value}}</option>
+        {{~}}
+        </select>
+        <button type="button" id="cancelButton">Cancel</button>
+        <button type="button" id="loadButton">Load</button>
+    </form>
+</div>`
+);
 
 export class LoadMapModal extends Modal {
     currentMapNames: string[];
@@ -15,40 +31,19 @@ export class LoadMapModal extends Modal {
     }
 
     setModalContent() {
-        let description = document.createElement("p");
-        description.textContent = "Choose a map name.";
-        this.bodyDiv.appendChild(description);
+        let modalHtml = template({ options: this.currentMapNames })
 
-        let form = document.createElement("form");
-        let nameSelect = document.createElement("select");
-        this.currentMapNames.forEach((mapName: string) => {
-            let nameOption = document.createElement("option");
-            nameOption.value = mapName;
-            nameOption.text = mapName;
-            nameSelect.appendChild(nameOption);
-        });
-        form.appendChild(nameSelect);
-
-        let cancelButton = document.createElement("button");
-        cancelButton.textContent = "Cancel";
-        cancelButton.type = "button";
-        form.appendChild(cancelButton);
-        let loadButton = document.createElement("button");
-        loadButton.textContent = "Load";
-        loadButton.type = "button";
-        form.appendChild(loadButton);
+        this.bodyDiv.innerHTML += modalHtml
 
         this.promise = new Promise((resolve, reject) => {
-            loadButton.addEventListener("click", () => {
-                resolve(nameSelect.value);
+            this.bodyDiv.querySelector("#loadButton") !.addEventListener("click", () => {
+                resolve((<HTMLSelectElement>document.getElementById("mapNameSelect")).value);
                 this.deleteModal();
             });
-            cancelButton.addEventListener("click", () => {
+            this.bodyDiv.querySelector("#cancelButton") !.addEventListener("click", () => {
                 reject();
                 this.deleteModal();
             });
         });
-
-        this.bodyDiv.appendChild(form);
     }
 }

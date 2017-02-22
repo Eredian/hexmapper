@@ -3,5 +3,8 @@
     "mousetrap": "registry:dt/mousetrap#1.5.0+20160501152135",
     "whatwg-fetch": "registry:dt/whatwg-fetch#0.0.0+20161004182750",
     "whatwg-streams": "registry:dt/whatwg-streams#0.0.0+20160829180742"
+  },
+  "dependencies": {
+    "dot": "registry:dt/dot#1.1.0+20170113200201"
   }
 }

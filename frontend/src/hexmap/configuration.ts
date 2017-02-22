@@ -62,8 +62,3 @@ export class Configuration {
         }
     }
 }
-
-
-/** WEBPACK FOOTER **
- ** ./src/hexmap/configuration.ts
- **/

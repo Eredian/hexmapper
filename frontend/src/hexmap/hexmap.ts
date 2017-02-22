@@ -1,3 +1,4 @@
+import { Server } from "./server";
 import { MapSettings } from "./models/mapsettings";
 import { MapData } from "./models/mapdata";
 import { UserSettings } from "./models/usersettings";
@@ -32,10 +33,9 @@ export class HexMap {
 
     private mapName: string;
 
-    private backEndPath: string = "http://localhost:8081/"
-
     private configuration: Configuration = new Configuration()
     private mapDrawer: MapDrawer
+    private server: Server = new Server()
 
     constructor() {
         this.userSettings.selectedImage = this.configuration.defaultMapImage
@@ -123,9 +123,7 @@ export class HexMap {
     }
 
     async getSavedMapNames(): Promise<string[]> {
-        let response = await fetch(this.backEndPath);
-        let mapNames: string[] = JSON.parse(await response.text());
-        return mapNames;
+        return this.server.getMapNames()
     }
 
     async create() {
@@ -141,11 +139,7 @@ export class HexMap {
         let modal = new LoadMapModal(await this.getSavedMapNames());
         let mapName = await modal.waitOnModal();
 
-        let url = this.backEndPath + mapName;
-        let mapResponse = await fetch(url);
-        let json = await mapResponse.text();
-
-        this.mapData = MapData.createFromJSON(json)
+        this.mapData = await this.server.getMap(mapName)
         this.mapTiles = this.mapData.tiles;
         this.mapDrawer = new MapDrawer(this.configuration, this.userSettings, this.mapData)
 
@@ -160,18 +154,11 @@ export class HexMap {
         if (mapName == null) {
             return;
         }
-        let url = this.backEndPath + mapName;
+        this.server.putMap(mapName, this.mapData)
+    }
 
-        let response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: this.mapData.exportAsJSON()
-        });
-
-        alert(response);
+    logInOrOut() {
+        this.server.logInOrOut()
     }
 
     up() {
