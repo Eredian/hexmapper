@@ -1,46 +1,46 @@
-import { Modal } from './modal';
+import { Modal } from './modal'
 
 export class SaveAsModal extends Modal {
-    promise: Promise<string>;
+    promise: Promise<string>
 
     constructor() {
-        super("Save map as");
+        super('Save map as')
     }
 
     async waitOnModal() {
-        this.createModal();
-        return this.promise;
+        this.createModal()
+        return this.promise
     }
 
     setModalContent() {
-        let description = document.createElement("p");
-        description.textContent = "Choose a map name.";
-        this.bodyDiv.appendChild(description);
+        let description = document.createElement('p')
+        description.textContent = 'Choose a map name.'
+        this.bodyDiv.appendChild(description)
 
-        let form = document.createElement("form");
-        let nameInput = document.createElement("input");
-        form.appendChild(nameInput);
+        let form = document.createElement('form')
+        let nameInput = document.createElement('input')
+        form.appendChild(nameInput)
 
-        let cancelButton = document.createElement("button");
-        cancelButton.textContent = "Cancel";
-        cancelButton.type = "button";
-        form.appendChild(cancelButton);
-        let saveButton = document.createElement("button");
-        saveButton.textContent = "Save";
-        saveButton.type = "button";
-        form.appendChild(saveButton);
+        let cancelButton = document.createElement('button')
+        cancelButton.textContent = 'Cancel'
+        cancelButton.type = 'button'
+        form.appendChild(cancelButton)
+        let saveButton = document.createElement('button')
+        saveButton.textContent = 'Save'
+        saveButton.type = 'button'
+        form.appendChild(saveButton)
 
         this.promise = new Promise((resolve, reject) => {
-            saveButton.addEventListener("click", () => {
-                resolve(nameInput.value);
-                this.deleteModal();
-            });
-            cancelButton.addEventListener("click", () => {
-                reject();
-                this.deleteModal();
-            });
-        });
+            saveButton.addEventListener('click', () => {
+                resolve(nameInput.value)
+                this.deleteModal()
+            })
+            cancelButton.addEventListener('click', () => {
+                reject()
+                this.deleteModal()
+            })
+        })
 
-        this.bodyDiv.appendChild(form);
+        this.bodyDiv.appendChild(form)
     }
 }

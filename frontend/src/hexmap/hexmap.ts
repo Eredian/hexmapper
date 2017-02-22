@@ -1,15 +1,15 @@
-import { Server } from "./server";
-import { MapSettings } from "./models/mapsettings";
-import { MapData } from "./models/mapdata";
-import { UserSettings } from "./models/usersettings";
-import { MapDrawer } from './mapdrawer';
-import { Configuration } from './configuration';
-import { SaveAsModal } from "./modals/saveasmodal";
-import { LoadMapModal } from "./modals/loadmapmodal";
-import { CreateMapModal } from "./modals/createmapmodal";
-import { HexTile } from "./models/hextile";
-import { HexMapTiles } from './hexmaptiles';
-import { TileColor } from "./models/tilecolor";
+import { Configuration } from './configuration'
+import { HexMapTiles } from './hexmaptiles'
+import { MapDrawer } from './mapdrawer'
+import { CreateMapModal } from './modals/createmapmodal'
+import { LoadMapModal } from './modals/loadmapmodal'
+import { SaveAsModal } from './modals/saveasmodal'
+import { HexTile } from './models/hextile'
+import { MapData } from './models/mapdata'
+import { MapSettings } from './models/mapsettings'
+import { TileColor } from './models/tilecolor'
+import { UserSettings } from './models/usersettings'
+import { Server } from './server'
 
 export enum ColumnPosition {
     LEFT,
@@ -22,16 +22,16 @@ export enum Mode {
 }
 
 export class HexMap {
-    private mapData: MapData;
-    private mapTiles: HexMapTiles;
+    private mapData: MapData
+    private mapTiles: HexMapTiles
     private userSettings: UserSettings = new UserSettings()
 
-    private canvas = <HTMLCanvasElement>document.getElementById("canvas");
+    private canvas = <HTMLCanvasElement>document.getElementById('canvas')
 
-    private mouseHeld: boolean = false;
-    private previousMouseMove: number[] = [];
+    private mouseHeld: boolean = false
+    private previousMouseMove: number[] = []
 
-    private mapName: string;
+    private mapName: string
 
     private configuration: Configuration = new Configuration()
     private mapDrawer: MapDrawer
@@ -41,10 +41,10 @@ export class HexMap {
         this.userSettings.selectedImage = this.configuration.defaultMapImage
         this.userSettings.selectedColor = this.configuration.defaultMapColor
 
-        this.canvas.addEventListener("click", (e) => this.click(e));
-        this.canvas.addEventListener("mousedown", (e) => this.click(e));
-        this.canvas.addEventListener("mouseup", (e) => this.click(e));
-        this.canvas.addEventListener("mousemove", (e) => this.click(e));
+        this.canvas.addEventListener('click', (e) => this.click(e))
+        this.canvas.addEventListener('mousedown', (e) => this.click(e))
+        this.canvas.addEventListener('mouseup', (e) => this.click(e))
+        this.canvas.addEventListener('mousemove', (e) => this.click(e))
     }
 
     zoomIn() {
@@ -72,53 +72,53 @@ export class HexMap {
     }
 
     generateNewDefaultMap() {
-        this.generateNewMap(this.configuration.defaultMapSize, this.configuration.defaultMapSize, this.configuration.defaultMapImage, this.configuration.defaultMapColor);
+        this.generateNewMap(this.configuration.defaultMapSize, this.configuration.defaultMapSize, this.configuration.defaultMapImage, this.configuration.defaultMapColor)
     }
 
     generateNewMap(width: number, height: number, tileClassName: string, colorClassName: TileColor) {
-        let tile = new HexTile();
-        tile.image = tileClassName;
-        tile.color = colorClassName.id;
-        tile.explored = false;
-        this.mapData = new MapData(new HexMapTiles(tile, width, height), new MapSettings(), this.configuration.defaultMapColors);
-        this.mapTiles = this.mapData.tiles;
+        let tile = new HexTile()
+        tile.image = tileClassName
+        tile.color = colorClassName.id
+        tile.explored = false
+        this.mapData = new MapData(new HexMapTiles(tile, width, height), new MapSettings(), this.configuration.defaultMapColors)
+        this.mapTiles = this.mapData.tiles
         this.mapDrawer = new MapDrawer(this.configuration, this.userSettings, this.mapData)
     }
 
     selectHex(hexName: string, colorName: TileColor) {
         if (hexName != null) {
-            this.userSettings.selectedImage = hexName;
+            this.userSettings.selectedImage = hexName
         }
         if (colorName != null) {
-            this.userSettings.selectedColor = colorName;
+            this.userSettings.selectedColor = colorName
         }
     }
 
     hexClicked(x: number, y: number) {
         if (this.configuration.mode == Mode.EDIT) {
             if (this.userSettings.bigPaint) {
-                this.mapTiles.forEachInFOV(x, y, (e) => this.changeTile(e));
+                this.mapTiles.forEachInFOV(x, y, (e) => this.changeTile(e))
             } else {
-                let tile = this.mapTiles.get(x, y);
+                let tile = this.mapTiles.get(x, y)
                 if (tile !== null) {
-                    this.changeTile(tile);
+                    this.changeTile(tile)
                 }
             }
         } else {
-            this.mapTiles.forEachInFOV(x, y, (e) => this.explore(e));
+            this.mapTiles.forEachInFOV(x, y, (e) => this.explore(e))
         }
     }
 
     changeTile(tile: HexTile) {
-        tile.image = this.userSettings.selectedImage;
-        tile.color = this.userSettings.selectedColor.id;
-        this.drawTile(tile);
+        tile.image = this.userSettings.selectedImage
+        tile.color = this.userSettings.selectedColor.id
+        this.drawTile(tile)
     }
 
     explore(tile: HexTile) {
         if (tile != null) {
-            tile.explored = true;
-            this.drawTile(tile);
+            tile.explored = true
+            this.drawTile(tile)
         }
     }
 
@@ -127,32 +127,32 @@ export class HexMap {
     }
 
     async create() {
-        let modal = new CreateMapModal();
-        this.mapName = await modal.waitOnModal();
+        let modal = new CreateMapModal()
+        this.mapName = await modal.waitOnModal()
 
-        this.generateNewMap(this.configuration.defaultMapSize, this.configuration.defaultMapSize, this.configuration.defaultMapImage, this.configuration.defaultMapColor);
-        this.deleteMap();
-        this.drawMap();
+        this.generateNewMap(this.configuration.defaultMapSize, this.configuration.defaultMapSize, this.configuration.defaultMapImage, this.configuration.defaultMapColor)
+        this.deleteMap()
+        this.drawMap()
     }
 
     async load() {
-        let modal = new LoadMapModal(await this.getSavedMapNames());
-        let mapName = await modal.waitOnModal();
+        let modal = new LoadMapModal(await this.getSavedMapNames())
+        let mapName = await modal.waitOnModal()
 
         this.mapData = await this.server.getMap(mapName)
-        this.mapTiles = this.mapData.tiles;
+        this.mapTiles = this.mapData.tiles
         this.mapDrawer = new MapDrawer(this.configuration, this.userSettings, this.mapData)
 
-        this.deleteMap();
-        this.drawMap();
+        this.deleteMap()
+        this.drawMap()
     }
 
     async save() {
-        let modal = new SaveAsModal();
-        let mapName = await modal.waitOnModal();
+        let modal = new SaveAsModal()
+        let mapName = await modal.waitOnModal()
 
         if (mapName == null) {
-            return;
+            return
         }
         this.server.putMap(mapName, this.mapData)
     }
@@ -179,106 +179,106 @@ export class HexMap {
 
     click(e: MouseEvent) {
         if (e.button != 0) {
-            return;
+            return
         }
-        if (e.buttons == 0 && e.type == "mousemove") {
-            return;
+        if (e.buttons == 0 && e.type == 'mousemove') {
+            return
         }
-        if (e.type == "mousedown") {
-            this.mouseHeld = true;
-        } else if (e.type == "mouseup") {
-            this.mouseHeld = false;
+        if (e.type == 'mousedown') {
+            this.mouseHeld = true
+        } else if (e.type == 'mouseup') {
+            this.mouseHeld = false
         }
-        if (e.type != "mousemove" || this.mouseHeld == true) {
+        if (e.type != 'mousemove' || this.mouseHeld == true) {
             if (this.previousMouseMove && Date.now() < this.previousMouseMove[2] + 100) {
-                let xHalfPoint = Math.floor((e.clientX + this.previousMouseMove[0]) / 2);
-                let yHalfPoint = Math.floor((e.clientY + this.previousMouseMove[1]) / 2);
-                let hex: HexTile | null = this.mapDrawer.offsetPixelToHex(xHalfPoint, yHalfPoint);
+                let xHalfPoint = Math.floor((e.clientX + this.previousMouseMove[0]) / 2)
+                let yHalfPoint = Math.floor((e.clientY + this.previousMouseMove[1]) / 2)
+                let hex: HexTile | null = this.mapDrawer.offsetPixelToHex(xHalfPoint, yHalfPoint)
                 if (hex) {
-                    this.hexClicked(hex.x, hex.y);
+                    this.hexClicked(hex.x, hex.y)
                 }
             }
-            let hex: HexTile | null = this.mapDrawer.offsetPixelToHex(e.clientX, e.clientY);
+            let hex: HexTile | null = this.mapDrawer.offsetPixelToHex(e.clientX, e.clientY)
             if (hex) {
-                this.previousMouseMove = [e.clientX, e.clientY, Date.now()];
-                this.hexClicked(hex.x, hex.y);
+                this.previousMouseMove = [e.clientX, e.clientY, Date.now()]
+                this.hexClicked(hex.x, hex.y)
             }
         }
     }
 
     setBigPaint(bigPaint: boolean) {
-        this.userSettings.bigPaint = bigPaint;
+        this.userSettings.bigPaint = bigPaint
     }
 
     nextSelectedImage(next: boolean) {
         if (next) {
             if (this.userSettings.currentFavoriteImage == this.configuration.favoriteImages.length - 1) {
-                this.userSettings.currentFavoriteImage = 0;
+                this.userSettings.currentFavoriteImage = 0
             } else {
-                this.userSettings.currentFavoriteImage++;
+                this.userSettings.currentFavoriteImage++
             }
         } else {
             if (this.userSettings.currentFavoriteImage == 0) {
-                this.userSettings.currentFavoriteImage = this.configuration.favoriteImages.length - 1;
+                this.userSettings.currentFavoriteImage = this.configuration.favoriteImages.length - 1
             } else {
-                this.userSettings.currentFavoriteImage--;
+                this.userSettings.currentFavoriteImage--
             }
         }
-        this.userSettings.selectedImage = this.configuration.favoriteImages[this.userSettings.currentFavoriteImage];
-        this.drawHexSelector();
+        this.userSettings.selectedImage = this.configuration.favoriteImages[this.userSettings.currentFavoriteImage]
+        this.drawHexSelector()
     }
     nextSelectedColor(next: boolean) {
         let tileColors = this.mapData.tileColors
         let currentSelectedColor = this.userSettings.selectedColor
         if (next) {
             if (currentSelectedColor == tileColors.slice(-1)[0]) {
-                this.userSettings.selectedColor = tileColors[0];
+                this.userSettings.selectedColor = tileColors[0]
             } else {
-                this.userSettings.selectedColor = tileColors[tileColors.indexOf(currentSelectedColor) + 1];
+                this.userSettings.selectedColor = tileColors[tileColors.indexOf(currentSelectedColor) + 1]
             }
         } else {
             if (currentSelectedColor == tileColors[0]) {
-                this.userSettings.selectedColor = tileColors.slice(-1)[0];
+                this.userSettings.selectedColor = tileColors.slice(-1)[0]
             } else {
-                this.userSettings.selectedColor = tileColors[tileColors.indexOf(currentSelectedColor) - 1];
+                this.userSettings.selectedColor = tileColors[tileColors.indexOf(currentSelectedColor) - 1]
             }
         }
-        this.userSettings.selectedImage = this.configuration.favoriteImages[this.userSettings.currentFavoriteImage];
-        this.drawHexSelector();
+        this.userSettings.selectedImage = this.configuration.favoriteImages[this.userSettings.currentFavoriteImage]
+        this.drawHexSelector()
     }
 
     drawHexSelector() {
-        let selector: HexTile = new HexTile();
-        selector.color = this.userSettings.selectedColor.id;
-        selector.image = this.userSettings.selectedImage;
-        this.drawTile(selector, true);
+        let selector: HexTile = new HexTile()
+        selector.color = this.userSettings.selectedColor.id
+        selector.image = this.userSettings.selectedImage
+        this.drawTile(selector, true)
     }
 
     addColumn(right: boolean) {
-        let tile = new HexTile();
-        tile.image = this.configuration.defaultMapImage;
-        tile.color = this.configuration.defaultMapColor.id;
-        tile.explored = false;
+        let tile = new HexTile()
+        tile.image = this.configuration.defaultMapImage
+        tile.color = this.configuration.defaultMapColor.id
+        tile.explored = false
 
-        this.mapTiles.addColumn(right, tile);
-        this.drawMap();
+        this.mapTiles.addColumn(right, tile)
+        this.drawMap()
     }
 
     addRow(bottom: boolean) {
-        let tile = new HexTile();
-        tile.image = this.configuration.defaultMapImage;
-        tile.color = this.configuration.defaultMapColor.id;
-        tile.explored = false;
+        let tile = new HexTile()
+        tile.image = this.configuration.defaultMapImage
+        tile.color = this.configuration.defaultMapColor.id
+        tile.explored = false
 
-        this.mapTiles.addRow(bottom, tile);
-        this.drawMap();
+        this.mapTiles.addRow(bottom, tile)
+        this.drawMap()
     }
 
     resize(width: number, height: number, redraw: boolean) {
-        this.canvas.width = width;
-        this.canvas.height = height;
+        this.canvas.width = width
+        this.canvas.height = height
         if (redraw) {
-            this.drawMap();
+            this.drawMap()
         }
     }
 }

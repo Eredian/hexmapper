@@ -3,11 +3,11 @@ export class ZoomLevel {
     halfWidth: number
     halfHeight: number
     // Name of folder containing the image files needed
-    filePath: string;
+    filePath: string
 
     constructor(halfWidth: number, halfHeight: number, filePath: string) {
-        this.halfWidth = halfWidth;
-        this.halfHeight = halfHeight;
-        this.filePath = filePath;
+        this.halfWidth = halfWidth
+        this.halfHeight = halfHeight
+        this.filePath = filePath
     }
 }

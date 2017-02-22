@@ -1,5 +1,5 @@
-import { Modal } from './modal';
 import * as doT from 'dot'
+import { Modal } from './modal'
 
 let template = doT.template(
 `<div class="modalBody">
@@ -14,20 +14,20 @@ let template = doT.template(
         <button type="button" id="loadButton">Load</button>
     </form>
 </div>`
-);
+)
 
 export class LoadMapModal extends Modal {
-    currentMapNames: string[];
-    promise: Promise<string>;
+    currentMapNames: string[]
+    promise: Promise<string>
 
     constructor(currentMapNames: string[]) {
-        super("Load map");
-        this.currentMapNames = currentMapNames;
+        super('Load map')
+        this.currentMapNames = currentMapNames
     }
 
     async waitOnModal() {
-        this.createModal();
-        return this.promise;
+        this.createModal()
+        return this.promise
     }
 
     setModalContent() {
@@ -36,14 +36,14 @@ export class LoadMapModal extends Modal {
         this.bodyDiv.innerHTML += modalHtml
 
         this.promise = new Promise((resolve, reject) => {
-            this.bodyDiv.querySelector("#loadButton") !.addEventListener("click", () => {
-                resolve((<HTMLSelectElement>document.getElementById("mapNameSelect")).value);
-                this.deleteModal();
-            });
-            this.bodyDiv.querySelector("#cancelButton") !.addEventListener("click", () => {
-                reject();
-                this.deleteModal();
-            });
-        });
+            this.bodyDiv.querySelector('#loadButton') !.addEventListener('click', () => {
+                resolve((<HTMLSelectElement>document.getElementById('mapNameSelect')).value)
+                this.deleteModal()
+            })
+            this.bodyDiv.querySelector('#cancelButton') !.addEventListener('click', () => {
+                reject()
+                this.deleteModal()
+            })
+        })
     }
 }
