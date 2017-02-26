@@ -1,4 +1,5 @@
 import { HexMap } from './hexmap'
+import { toolButtonsValues } from './toolswitcher'
 
 export class EventHandler {
     map: HexMap
@@ -22,6 +23,21 @@ export class EventHandler {
         this.tryAddListener('downButton', 'mouseup', () => this.map.down())
         this.tryAddListener('leftButton', 'mouseup', () => this.map.left())
         this.tryAddListener('rightButton', 'mouseup', () => this.map.right())
+
+        this.tryAddListener('toolButtons', 'mouseup', () => this.showOrHideToolSelectionButtons())
+        toolButtonsValues.forEach((toolButtonValues, tool) => {
+            let toolButtonId = toolButtonValues.id
+            this.tryAddListener(toolButtonId, 'mouseup', () => this.map.switchToTool(tool))
+        })
+    }
+
+    showOrHideToolSelectionButtons() {
+        let classList = document.getElementById('selectionToolButtons') !.classList
+        if (classList.contains('hidden')) {
+            classList.remove('hidden')
+        } else {
+            classList.add('hidden')
+        }
     }
 
     addShortcuts() {

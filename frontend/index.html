@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="viewport" content="width=device-width">
@@ -39,6 +40,17 @@
             </li>
             <li id="logInOrOutButton">
                 <i class="fa fa-fw fa-sign-in fa-bigx"></i>
+            </li>
+            <li id="toolButtons">
+                <i id="currentToolButton" class="fa fa-fw fa-mouse-pointer fa-bigx"></i>
+                <ul id="selectionToolButtons" class="hidden">
+                    <li><i id="useToolButton" class="fa fa-fw fa-mouse-pointer fa-bigx selected"></i></li>
+                    <li><i id="colorToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-tint"></i></i></li>
+                    <li><i id="imageToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-home"></i></i></li>
+                    <li><i id="colorImageToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-home"></i><i
+                            class="fa fa-fw fa-tint"></i></i></li>
+                    <li><i id="exploreToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-eye"></i></i></li>
+                </ul>
             </li>
         </ul>
     </div>

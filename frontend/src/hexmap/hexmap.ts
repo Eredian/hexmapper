@@ -4,21 +4,18 @@ import { MapDrawer } from './mapdrawer'
 import { CreateMapModal } from './modals/createmapmodal'
 import { LoadMapModal } from './modals/loadmapmodal'
 import { SaveAsModal } from './modals/saveasmodal'
+import { ViewTileModal } from './modals/viewtilemodal'
 import { HexTile } from './models/hextile'
 import { MapData } from './models/mapdata'
 import { MapSettings } from './models/mapsettings'
 import { TileColor } from './models/tilecolor'
 import { UserSettings } from './models/usersettings'
 import { Server } from './server'
+import { Tool, ToolSwitcher } from './toolswitcher'
 
 export enum ColumnPosition {
     LEFT,
     RIGHT,
-}
-
-export enum Mode {
-    EDIT,
-    EXPLORE
 }
 
 export class HexMap {
@@ -36,6 +33,7 @@ export class HexMap {
     private configuration: Configuration = new Configuration()
     private mapDrawer: MapDrawer
     private server: Server = new Server()
+    private toolSwitcher: ToolSwitcher = new ToolSwitcher(this.configuration)
 
     constructor() {
         this.userSettings.selectedImage = this.configuration.defaultMapImage
@@ -95,7 +93,7 @@ export class HexMap {
     }
 
     hexClicked(x: number, y: number) {
-        if (this.configuration.mode == Mode.EDIT) {
+        if ([Tool.DRAW_IMAGE_COLOR, Tool.DRAW_COLOR, Tool.DRAW_IMAGE].includes(this.configuration.currentTool)) {
             if (this.userSettings.bigPaint) {
                 this.mapTiles.forEachInFOV(x, y, (e) => this.changeTile(e))
             } else {
@@ -104,14 +102,26 @@ export class HexMap {
                     this.changeTile(tile)
                 }
             }
-        } else {
+        } else if (this.configuration.currentTool == Tool.EXPLORE) {
             this.mapTiles.forEachInFOV(x, y, (e) => this.explore(e))
+        } else if (this.configuration.currentTool == Tool.USE) {
+            new ViewTileModal(this.mapTiles.get(x, y) !).createModal()
         }
     }
 
     changeTile(tile: HexTile) {
-        tile.image = this.userSettings.selectedImage
-        tile.color = this.userSettings.selectedColor.id
+        switch (this.configuration.currentTool) {
+            case Tool.DRAW_COLOR:
+                tile.color = this.userSettings.selectedColor.id
+                break
+            case Tool.DRAW_IMAGE:
+                tile.image = this.userSettings.selectedImage
+                break
+            case Tool.DRAW_IMAGE_COLOR:
+                tile.color = this.userSettings.selectedColor.id
+                tile.image = this.userSettings.selectedImage
+                break
+        }
         this.drawTile(tile)
     }
 
@@ -280,5 +290,10 @@ export class HexMap {
         if (redraw) {
             this.drawMap()
         }
+    }
+
+    switchToTool(tool: Tool) {
+        this.toolSwitcher.switchToTool(tool)
+        this.drawMap()
     }
 }

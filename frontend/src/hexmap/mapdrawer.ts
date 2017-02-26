@@ -1,10 +1,10 @@
 import { Configuration } from './configuration'
-import { Mode } from './hexmap'
 import { HexMapTiles } from './hexmaptiles'
 import { HexTile } from './models/hextile'
 import { MapData } from './models/mapdata'
 import { UserSettings } from './models/usersettings'
 import { ZoomLevel } from './models/zoomlevel'
+import { Tool } from './toolswitcher'
 import { ZoomLevelImages } from './zoomlevelimages'
 
 export class MapDrawer {
@@ -127,7 +127,7 @@ export class MapDrawer {
     }
 
     drawTile(tile: HexTile, selector: boolean = false) {
-        let explored = tile['explored'] || this.configuration.mode == Mode.EDIT
+        let explored = tile['explored'] || !([Tool.USE, Tool.EXPLORE].includes(this.configuration.currentTool))
 
         let XPos = selector ? 15 : this.hex_to_pixel(tile).x - this.baseXPos
         let YPos = selector ? 15 : this.hex_to_pixel(tile).y - this.baseYPos

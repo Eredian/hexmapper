@@ -1,11 +1,11 @@
-import { Mode } from './hexmap'
 import { TileColor } from './models/tilecolor'
 import { ZoomLevel } from './models/zoomlevel'
+import { Tool } from './toolswitcher'
 
 export class Configuration {
 
     zoomLevelMap: ZoomLevel[] = []
-    mode: Mode = Mode.EXPLORE
+    currentTool: Tool = Tool.USE
     favoriteImages: string[] = []
     defaultMapImage: string
     defaultMapColor: TileColor
@@ -54,11 +54,5 @@ export class Configuration {
         this.defaultMapColor = this.defaultMapColors[4]
 
         this.defaultMapImage = this.favoriteImages[0]
-
-        if (window.location.href.endsWith('edit')) {
-            this.mode = Mode.EDIT
-        } else {
-            this.mode = Mode.EXPLORE
-        }
     }
 }

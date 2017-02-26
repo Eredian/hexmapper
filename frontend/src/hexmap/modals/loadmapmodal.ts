@@ -1,8 +1,8 @@
 import * as doT from 'dot'
 import { Modal } from './modal'
 
-let template = doT.template(
-`<div class="modalBody">
+const template = doT.template(
+    `<div class="modalBody">
     <p>Choose a map name.</p>
     <form>
         <select id="mapNameSelect">
@@ -13,8 +13,7 @@ let template = doT.template(
         <button type="button" id="cancelButton">Cancel</button>
         <button type="button" id="loadButton">Load</button>
     </form>
-</div>`
-)
+</div>`)
 
 export class LoadMapModal extends Modal {
     currentMapNames: string[]

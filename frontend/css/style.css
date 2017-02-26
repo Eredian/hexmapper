@@ -22,12 +22,13 @@ body {
     padding: 0 5px;
     margin: 2px 5px;
 }
+
 .modalRoot {
     top: 0;
     bottom: 0;
     left: 0;
     right: 0;
-    background-color: rgba(0,0,0,0.5);
+    background-color: rgba(0, 0, 0, 0.5);
     position: absolute;
     z-index: 99999;
 }
@@ -44,20 +45,20 @@ body {
     border-radius: 25px;
 }
 
+ul {
+    list-style-type: none;
+}
+
 #selectorList {
     position: absolute;
     top: 0;
     right: 0;
-    list-style-type: none;
     margin: 0;
     padding: 0;
     background-color: rgb(200, 200, 200);
     backface-visibility: hidden;
     pointer-events: all;
-}
-
-#selectorList li {
-    margin: 5px;
+    padding: 4px;
 }
 
 textarea {
@@ -107,8 +108,48 @@ textarea {
 }
 
 .fa-bigx {
-    font-size: 4em;
+    font-size: 2.5em;
     cursor: pointer;
+}
+
+.overlaid i:first-child {
+    position: absolute;
+    top: 0;
+    left: 0;
+    font-size: .4em;
+}
+
+.overlaid i:last-child {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-size: .4em;
+}
+
+.overlaid {
+    position: relative;
+}
+
+#toolButtons {
+    position: relative;
+}
+
+#toolButtons ul {
+    position: absolute;
+    left: 0;
+    transform: translateX(-100%);
+    top: 0;
+    width: max-content;
+    background-color: rgb(200, 200, 200);
+    padding: 2px;
+}
+
+#toolButtons ul li {
+    display: inline-block;
+}
+
+.hidden {
+    display: none !important;
 }
 
 @media screen and (max-device-width: 320px) {
