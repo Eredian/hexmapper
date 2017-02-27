@@ -32,4 +32,9 @@ export abstract class Modal {
         this.titleDiv.appendChild(titleHeader)
     }
     protected abstract setModalContent(): void;
+
+    protected addDefaultRejection(reject: Function) {
+        Mousetrap.bind('escape', () => reject())
+        this.fullScreenDiv.addEventListener('click', (event) => event.target == this.fullScreenDiv && reject())
+    }
 }

@@ -1,6 +1,6 @@
 import * as doT from 'dot'
 import { HexTile } from '../models/hextile'
-import {HexTileInfo} from '../models/hextileinfo'
+import { HexTileInfo } from '../models/hextileinfo'
 import { Modal } from './modal'
 
 let template = doT.template(
@@ -30,17 +30,18 @@ export class ViewTileModal extends Modal {
 
         this.bodyDiv.innerHTML += modalHtml
 
-        new Promise((resolve, reject) => {
+        let promise = new Promise((resolve, reject) => {
             this.bodyDiv.querySelector('#saveButton') !.addEventListener('click', () => {
                 this.saveTile()
                 resolve()
-                this.deleteModal()
             })
             this.bodyDiv.querySelector('#discardButton') !.addEventListener('click', () => {
                 reject()
-                this.deleteModal()
             })
+            this.addDefaultRejection(reject)
         })
+
+        promise.then(() => this.deleteModal(), () => this.deleteModal())
     }
 
     saveTile() {

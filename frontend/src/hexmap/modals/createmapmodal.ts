@@ -33,13 +33,13 @@ export class CreateMapModal extends Modal {
         this.promise = new Promise((resolve, reject) => {
             saveButton.addEventListener('click', () => {
                 resolve(nameInput.value)
-                this.deleteModal()
             })
             cancelButton.addEventListener('click', () => {
                 reject()
-                this.deleteModal()
             })
+            this.addDefaultRejection(reject)
         })
+        this.promise.then(() => this.deleteModal(), () => this.deleteModal())
 
         this.bodyDiv.appendChild(form)
     }

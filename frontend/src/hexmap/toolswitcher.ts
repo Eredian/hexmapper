@@ -1,6 +1,6 @@
 import * as doT from 'dot'
 import { Configuration } from './configuration'
-import { ToolButtonValues } from './modals/toolbuttonvalues'
+import { ToolButtonValues } from './models/toolbuttonvalues'
 
 export enum Tool {
     USE,
@@ -42,7 +42,5 @@ export class ToolSwitcher {
         document.getElementById('currentToolButton') !.outerHTML = template((toolButtonsValues.get(this.currentTool)))
 
         this.configuration.currentTool = this.currentTool
-
-        //document.getElementById('selectionToolButtons') !.classList.add('hidden')
     }
 }

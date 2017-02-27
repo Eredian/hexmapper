@@ -37,12 +37,12 @@ export class LoadMapModal extends Modal {
         this.promise = new Promise((resolve, reject) => {
             this.bodyDiv.querySelector('#loadButton') !.addEventListener('click', () => {
                 resolve((<HTMLSelectElement>document.getElementById('mapNameSelect')).value)
-                this.deleteModal()
             })
             this.bodyDiv.querySelector('#cancelButton') !.addEventListener('click', () => {
                 reject()
-                this.deleteModal()
             })
+            this.addDefaultRejection(reject)
         })
+        this.promise.then(() => this.deleteModal(), () => this.deleteModal())
     }
 }
