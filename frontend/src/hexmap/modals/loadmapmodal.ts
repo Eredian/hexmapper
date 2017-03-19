@@ -10,8 +10,8 @@ const template = doT.template(
             <option value="{{=value}}">{{=value}}</option>
         {{~}}
         </select>
-        <button type="button" id="cancelButton">Cancel</button>
-        <button type="button" id="loadButton">Load</button>
+        <button type="button" id="cancelButton" class="button">Cancel</button>
+        <button type="button" id="loadButton" class="button">Load</button>
     </form>
 </div>`)
 

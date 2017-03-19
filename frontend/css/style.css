@@ -1,3 +1,15 @@
+button {
+    all: unset;
+}
+
+title {
+    display: none;
+}
+
+h2, p {
+    display: inline-block;
+}
+
 body {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -70,7 +82,7 @@ textarea {
     pointer-events: none;
 }
 
-.button {
+.translate-button {
     text-shadow: -2px 0 white, 0 2px white, 2px 0 white, 0 -2px white;
     pointer-events: all;
     position: absolute;
@@ -152,8 +164,93 @@ textarea {
     display: none !important;
 }
 
+.button {
+    box-shadow: inset 0px 1px 0px 0px #9acc85;
+    background-color: #74ad5a;
+    border: 1px solid #3b6e22;
+    display: inline-block;
+    cursor: pointer;
+    color: #ddd;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 6px 12px;
+    text-decoration: none;
+}
+
+.button:hover {
+    background-color: #68a54b;
+}
+
+.button:active {
+    position: relative;
+    top: 1px;
+}
+
 @media screen and (max-device-width: 320px) {
     .fa-bigx {
         font-size: 3em;
     }
+}
+
+.tileModalBody {
+    width: 800px;
+}
+
+.tileModalBodyTileView {
+    width: 30%;
+    height: 200px;
+    background-color: black;
+    display: inline-block;
+    color: white;
+    font-size: .5em;
+    position: relative;
+}
+
+#tileViewCanvas {
+    display: inline-block;
+    text-align: center;
+    top: 50%;
+    position: relative;
+    transform: translateY(-50%);
+}
+
+#tileViewTerrainName {
+    top: 0;
+    right: 1px;
+    position: absolute;
+    text-align: right;
+}
+
+#tileViewFeatureName {
+    bottom: 0;
+    right: 1px;
+    position: absolute;
+    text-align: right;
+}
+
+.tileModalBodyDescription {
+    display: inline-block;
+    width: 70%;
+    vertical-align: top;
+    text-align: justify;
+}
+
+.tileModalBodyDescription p {
+    padding-left: 5px;
+}
+
+#tileFeatureSection {
+    height: 100px;
+}
+
+#tileMonsterBar {
+    width: 15%;
+}
+
+#tileLocationBar {
+    width: 15%;
+}
+
+#tileFeatureDescription {
+    width: 70%;
 }

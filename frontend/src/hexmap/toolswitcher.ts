@@ -1,14 +1,7 @@
 import * as doT from 'dot'
-import { Configuration } from './configuration'
+import { configuration } from './configuration'
+import { Tool } from './enums/tool'
 import { ToolButtonValues } from './models/toolbuttonvalues'
-
-export enum Tool {
-    USE,
-    DRAW_IMAGE,
-    DRAW_COLOR,
-    DRAW_IMAGE_COLOR,
-    EXPLORE
-}
 
 export const toolButtonsValues = new Map<Tool, ToolButtonValues>([
     [Tool.USE, new ToolButtonValues('useToolButton', 'fa-mouse-pointer')],
@@ -26,21 +19,19 @@ const template = doT.template(
 
 export class ToolSwitcher {
     currentTool: Tool
-    configuration: Configuration
 
-    constructor(configuration: Configuration) {
-        this.configuration = configuration
+    constructor() {
         this.currentTool = Tool.USE
-        this.configuration.currentTool = this.currentTool
+        configuration.currentTool = this.currentTool
     }
 
     switchToTool(tool: Tool) {
-        document.getElementById(toolButtonsValues.get(this.currentTool) !.id) !.classList.remove('selected')
+        document.getElementById(toolButtonsValues.get(this.currentTool)!.id)!.classList.remove('selected')
         this.currentTool = tool
-        document.getElementById(toolButtonsValues.get(this.currentTool) !.id) !.classList.add('selected')
+        document.getElementById(toolButtonsValues.get(this.currentTool)!.id)!.classList.add('selected')
 
-        document.getElementById('currentToolButton') !.outerHTML = template((toolButtonsValues.get(this.currentTool)))
+        document.getElementById('currentToolButton')!.outerHTML = template((toolButtonsValues.get(this.currentTool)))
 
-        this.configuration.currentTool = this.currentTool
+        configuration.currentTool = this.currentTool
     }
 }

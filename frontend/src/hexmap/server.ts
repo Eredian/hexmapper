@@ -1,5 +1,7 @@
 import { MapData } from './models/mapdata'
 
+export let currentUser = ''
+
 export class Server {
 
     private backEndPath: string = 'http://localhost:8081/'
@@ -8,6 +10,7 @@ export class Server {
 
     private jwtToken: string
     private name: string
+    private email: string
     private photoUrl: string
 
     constructor() {
@@ -27,14 +30,14 @@ export class Server {
         let jsonResponse = await this.call(this.mapPath + name)
         let json = await jsonResponse.text()
 
-        return MapData.createFromJSON(json)
+        return MapData.fromJSON(json)
     }
 
     async putMap(name: string, mapData: MapData) {
         let headers = new Headers()
         headers.append('Accept', 'application/json')
         headers.append('Content-Type', 'application/json')
-        let response = this.call(this.mapPath + name, 'POST', headers, mapData.exportAsJSON())
+        let response = this.call(this.mapPath + name, 'POST', headers, JSON.stringify(mapData))
 
         console.log(response)
     }
@@ -43,6 +46,8 @@ export class Server {
         if (this.jwtToken) {
             this.jwtToken = ''
             this.name = ''
+            this.email = ''
+            currentUser = ''
             this.photoUrl = ''
             this.removeAccount()
             this.displayLoggedOut()
@@ -84,6 +89,8 @@ export class Server {
         let message = JSON.parse(event.data)
         this.jwtToken = message.token
         this.name = message.name
+        this.email = message.email
+        currentUser = message.email
         this.photoUrl = message.photo
         this.storeAccount()
         this.displayLoggedIn()
@@ -104,18 +111,22 @@ export class Server {
     private storeAccount() {
         localStorage.setItem('jwtToken', this.jwtToken)
         localStorage.setItem('name', this.name)
+        localStorage.setItem('email', this.email)
         localStorage.setItem('photoUrl', this.photoUrl)
     }
 
     private loadAccount() {
         this.jwtToken = localStorage.getItem('jwtToken') || ''
         this.name = localStorage.getItem('name') || ''
+        this.email = localStorage.getItem('email') || ''
+        currentUser = this.email
         this.photoUrl = localStorage.getItem('photoUrl') || ''
     }
 
     private removeAccount() {
         localStorage.removeItem('jwtToken')
         localStorage.removeItem('name')
+        localStorage.removeItem('email')
         localStorage.removeItem('photoUrl')
     }
 }

@@ -1,8 +1,8 @@
+import { Tool } from './enums/tool'
 import { TileColor } from './models/tilecolor'
 import { ZoomLevel } from './models/zoomlevel'
-import { Tool } from './toolswitcher'
 
-export class Configuration {
+class Configuration {
 
     zoomLevelMap: ZoomLevel[] = []
     currentTool: Tool = Tool.USE
@@ -56,3 +56,5 @@ export class Configuration {
         this.defaultMapImage = this.favoriteImages[0]
     }
 }
+
+export let configuration = new Configuration()

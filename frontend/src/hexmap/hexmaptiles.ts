@@ -1,5 +1,7 @@
 import { OperateOnTile } from './interfaces/operateontile'
+import { HexTileForExport } from './models/hextile'
 import { HexTile } from './models/hextile'
+import { TileColor } from './models/tilecolor'
 
 export class HexMapTiles {
     private tiles: Map<number, Map<number, HexTile>> = new Map<number, Map<number, HexTile>>()
@@ -13,21 +15,21 @@ export class HexMapTiles {
         if (!this.tiles.has(x)) {
             this.tiles.set(x, new Map<number, HexTile>())
         }
-        this.tiles.get(x) !.set(y, value)
+        this.tiles.get(x)!.set(y, value)
         if (!this.invertedTiles.has(y)) {
             this.invertedTiles.set(y, new Map<number, HexTile>())
         }
-        this.invertedTiles.get(y) !.set(x, value)
+        this.invertedTiles.get(y)!.set(x, value)
 
     }
 
     has(x: number, y: number): boolean {
-        return (this.tiles.has(x) && this.tiles.get(x) !.has(y))
+        return (this.tiles.has(x) && this.tiles.get(x)!.has(y))
     }
 
     get(x: number, y: number): HexTile | null {
-        if (this.tiles.has(x) && this.tiles.get(x) !.has(y)) {
-            return this.tiles.get(x) !.get(y) !
+        if (this.tiles.has(x) && this.tiles.get(x)!.has(y)) {
+            return this.tiles.get(x)!.get(y)!
         }
         return null
     }
@@ -54,7 +56,7 @@ export class HexMapTiles {
         }
         this.invertedTiles.forEach((line: Map<number, HexTile>) => {
             let keys = line.keys()
-            let firstElement: HexTile = line.get(keyFindFunction(...keys)) !
+            let firstElement: HexTile = line.get(keyFindFunction(...keys))!
 
             let tile = new HexTile()
             tile.image = defaultTile.image
@@ -76,7 +78,7 @@ export class HexMapTiles {
         }
         let rowKeys = this.invertedTiles.keys()
         let rowKey = keyFindFunction(...rowKeys)
-        this.invertedTiles.get(rowKey) !.forEach((baseTile: HexTile) => {
+        this.invertedTiles.get(rowKey)!.forEach((baseTile: HexTile) => {
             let tile = new HexTile()
             tile.image = defaultTile.image
             tile.color = defaultTile.color
@@ -108,24 +110,24 @@ export class HexMapTiles {
     getTopLeftTile(): HexTile {
         let minimumY: number = Math.min(...this.invertedTiles.keys())
 
-        let minimumX: number = Math.min(...this.invertedTiles.get(minimumY) !.keys())
+        let minimumX: number = Math.min(...this.invertedTiles.get(minimumY)!.keys())
 
-        return this.invertedTiles.get(minimumY) !.get(minimumX) !
+        return this.invertedTiles.get(minimumY)!.get(minimumX)!
     }
 
     getTopRightTile(): HexTile {
         let minimumY: number = Math.min(...this.invertedTiles.keys())
 
-        let maximumX: number = Math.max(...this.invertedTiles.get(minimumY) !.keys())
+        let maximumX: number = Math.max(...this.invertedTiles.get(minimumY)!.keys())
 
-        return this.invertedTiles.get(minimumY) !.get(maximumX) !
+        return this.invertedTiles.get(minimumY)!.get(maximumX)!
     }
 
     getBottomRightTile(): HexTile {
         let maxYKey: number = Math.max(...this.invertedTiles.keys())
         if (maxYKey != undefined) {
-            let maxXKey: number = Math.max(...this.invertedTiles.get(maxYKey) !.keys())
-            return this.tiles.get(maxXKey) !.get(maxYKey) !
+            let maxXKey: number = Math.max(...this.invertedTiles.get(maxYKey)!.keys())
+            return this.tiles.get(maxXKey)!.get(maxYKey)!
 
         }
         throw Error('Could not find the bottom right tile.')
@@ -157,20 +159,20 @@ export class HexMapTiles {
         }
     }
 
-    exportAsTileArray(): HexTile[] {
-        let tilesArray: HexTile[] = []
+    toJSON(): HexTileForExport[] {
+        let tilesArray: HexTileForExport[] = []
         this.forEach((tile: HexTile) => {
-            tilesArray.push(tile)
+            tilesArray.push(tile.toJSON())
         })
         return tilesArray
     }
 
-    static createFromTileArray(tiles: HexTile[]): HexMapTiles {
+    static fromJSON(tiles: HexTileForExport[], colors: TileColor[]): HexMapTiles {
         let object: HexMapTiles = Object.create(HexMapTiles.prototype)
         object.tiles = new Map<number, Map<number, HexTile>>()
         object.invertedTiles = new Map<number, Map<number, HexTile>>()
-        tiles.forEach((tile: HexTile) => {
-            object.add(tile.x, tile.y, tile)
+        tiles.forEach((tile: HexTileForExport) => {
+            object.add(tile.x, tile.y, HexTile.fromJSON(tile, colors))
         })
         return object
     }

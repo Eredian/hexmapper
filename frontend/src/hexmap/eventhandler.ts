@@ -18,6 +18,7 @@ export class EventHandler {
         this.tryAddListener('mapLoadButton', 'mouseup', () => this.map.load())
         this.tryAddListener('mapCreateButton', 'mouseup', () => this.map.create())
         this.tryAddListener('logInOrOutButton', 'mouseup', () => this.map.logInOrOut())
+        this.tryAddListener('changePermissionsButton', 'mouseup', () => this.map.changePermissions())
 
         this.tryAddListener('upButton', 'mouseup', () => this.map.up())
         this.tryAddListener('downButton', 'mouseup', () => this.map.down())

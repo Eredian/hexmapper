@@ -60,7 +60,7 @@ app.get('/auth/oauthcallback', function (req, res, next) {
                 expiresIn: "1d"
             })
             var messageUri = req.query.state
-            var message = JSON.stringify({ token: token, name: user.displayName, photo: user.photos[0].value })
+            var message = JSON.stringify({ token: token, name: user.displayName, email: user.emails[0].value, photo: user.photos[0].value })
             res.send(`<script type="text/javascript">window.opener.postMessage(\`${message}\`, "${messageUri})");` +
                 `window.close()</script>`)
         }
@@ -86,9 +86,8 @@ app.use(function (req, res, next) {
     }
 });
 
-
 app.get('/map', async (req, res) => {
-    let documentList = await db.find({}, { name: 1 }).catch(e => res.status(500).json({ message: e.message }));
+    let documentList = await db.find({ "tiles.permissions.users": req.user }, { name: 1 }).catch(e => res.status(500).json({ message: e.message }));
 
     if (documentList) {
         documentList = documentList.map(elem => elem._id);
@@ -99,7 +98,7 @@ app.get('/map', async (req, res) => {
 app.get('/map/:id', async (req, res) => {
 
     let id = req.params.id;
-    let document = await db.findOne({ "_id": id, "owner": req.user }).catch(e => res.status(500).json({ message: e.message }));
+    let document = await db.findOne({ "_id": id, "tiles.permissions.users": req.user }).catch(e => res.status(500).json({ message: e.message }));
 
     if (!document) {
         res.status(404).send("Map not found.");
@@ -113,7 +112,7 @@ app.post('/map/:id', async (req, res) => {
     let body = req.body;
 
     try {
-        var updateResult = await db.update({ _id: id }, { _id: id, tiles: body, owner: req.user }, { upsert: true });
+        var updateResult = await db.update({ _id: id }, { _id: id, tiles: body }, { upsert: true });
     } catch (error) {
         res.status(500).json({ message: error.message });
         return;

@@ -1,10 +1,9 @@
-import { Configuration } from './configuration'
+import { configuration } from './configuration'
+import { Tool } from './enums/tool'
 import { HexMapTiles } from './hexmaptiles'
 import { HexTile } from './models/hextile'
 import { MapData } from './models/mapdata'
-import { UserSettings } from './models/usersettings'
 import { ZoomLevel } from './models/zoomlevel'
-import { Tool } from './toolswitcher'
 import { ZoomLevelImages } from './zoomlevelimages'
 
 export class MapDrawer {
@@ -14,8 +13,6 @@ export class MapDrawer {
     private baseYPos: number = 0
 
     private zoomLevel: number = 1
-    private configuration: Configuration
-    private userSettings: UserSettings
     private mapTiles: HexMapTiles
     private zoomLevelImages: ZoomLevelImages[] = []
 
@@ -23,12 +20,10 @@ export class MapDrawer {
     private context = <CanvasRenderingContext2D>this.canvas.getContext('2d')
     private baseImages: { [key: string]: HTMLImageElement }
 
-    constructor(configuration: Configuration, userSettings: UserSettings, mapData: MapData) {
-        this.configuration = configuration
-        this.userSettings = userSettings
+    constructor(mapData: MapData) {
         this.mapTiles = mapData.tiles
 
-        this.configuration.zoomLevelMap.forEach((zoomLevel: ZoomLevel) => {
+        configuration.zoomLevelMap.forEach((zoomLevel: ZoomLevel) => {
             this.zoomLevelImages.push(new ZoomLevelImages(zoomLevel, mapData.tileColors))
         })
 
@@ -61,11 +56,11 @@ export class MapDrawer {
     }
 
     zoomIn() {
-        if (!this.configuration.zoomLevelMap[this.zoomLevel + 1]) {
+        if (!configuration.zoomLevelMap[this.zoomLevel + 1]) {
             return
         }
-        this.baseXPos *= Math.floor(this.configuration.zoomLevelMap[this.zoomLevel + 1].halfWidth / this.configuration.zoomLevelMap[this.zoomLevel].halfWidth)
-        this.baseYPos *= Math.floor(this.configuration.zoomLevelMap[this.zoomLevel + 1].halfHeight / this.configuration.zoomLevelMap[this.zoomLevel].halfHeight)
+        this.baseXPos *= Math.floor(configuration.zoomLevelMap[this.zoomLevel + 1].halfWidth / configuration.zoomLevelMap[this.zoomLevel].halfWidth)
+        this.baseYPos *= Math.floor(configuration.zoomLevelMap[this.zoomLevel + 1].halfHeight / configuration.zoomLevelMap[this.zoomLevel].halfHeight)
         this.zoomLevel++
         this.updateHexDimensions()
         this.deleteMap()
@@ -73,11 +68,11 @@ export class MapDrawer {
     }
 
     zoomOut() {
-        if (!this.configuration.zoomLevelMap[this.zoomLevel - 1]) {
+        if (!configuration.zoomLevelMap[this.zoomLevel - 1]) {
             return
         }
-        this.baseXPos *= Math.floor(this.configuration.zoomLevelMap[this.zoomLevel - 1].halfWidth / this.configuration.zoomLevelMap[this.zoomLevel].halfWidth)
-        this.baseYPos *= Math.floor(this.configuration.zoomLevelMap[this.zoomLevel - 1].halfHeight / this.configuration.zoomLevelMap[this.zoomLevel].halfHeight)
+        this.baseXPos *= Math.floor(configuration.zoomLevelMap[this.zoomLevel - 1].halfWidth / configuration.zoomLevelMap[this.zoomLevel].halfWidth)
+        this.baseYPos *= Math.floor(configuration.zoomLevelMap[this.zoomLevel - 1].halfHeight / configuration.zoomLevelMap[this.zoomLevel].halfHeight)
         this.zoomLevel--
         this.updateHexDimensions()
         this.deleteMap()
@@ -126,8 +121,8 @@ export class MapDrawer {
         }
     }
 
-    drawTile(tile: HexTile, selector: boolean = false) {
-        let explored = tile['explored'] || !([Tool.USE, Tool.EXPLORE].includes(this.configuration.currentTool))
+    drawTile(tile: HexTile, selector: boolean = false, drawHexNumbers: boolean = false) {
+        let explored = tile['explored'] || !([Tool.USE, Tool.EXPLORE].includes(configuration.currentTool))
 
         let XPos = selector ? 15 : this.hex_to_pixel(tile).x - this.baseXPos
         let YPos = selector ? 15 : this.hex_to_pixel(tile).y - this.baseYPos
@@ -139,7 +134,7 @@ export class MapDrawer {
             return
         }
         if (explored) {
-            this.context.drawImage(this.currentZoomLevel().colorMap[tile.color], XPos, YPos)
+            this.context.drawImage(this.currentZoomLevel().colorMap[tile.color.id], XPos, YPos)
         } else {
             this.context.drawImage(this.currentZoomLevel().colorMap[0], XPos, YPos)
         }
@@ -152,7 +147,7 @@ export class MapDrawer {
             let baseImage = this.baseImages[tile.image]
             this.context.drawImage(baseImage, XPos - (baseImage.width - this.currentZoomLevel().width) / 2, YPos - (baseImage.height - this.currentZoomLevel().height) / 2)
         }
-        if (this.userSettings.drawHexNumbers) {
+        if (drawHexNumbers) {
             this.context.lineWidth = 1
             this.context.textAlign = 'center'
             this.context.font = '12px Verdana'
@@ -162,11 +157,8 @@ export class MapDrawer {
         }
     }
 
-    drawHexSelector() {
-        let selector: HexTile = new HexTile()
-        selector.color = this.userSettings.selectedColor.id
-        selector.image = this.userSettings.selectedImage
-        this.drawTile(selector, true)
+    drawHexSelector(tile: HexTile) {
+        this.drawTile(tile, true)
     }
 
     currentZoomLevel(): ZoomLevelImages {
@@ -220,5 +212,29 @@ export class MapDrawer {
 
     offsetPixelToHex(x: number, y: number): HexTile | null {
         return this.pixel_to_hex(x + this.baseXPos, y + this.baseYPos)
+    }
+
+    drawTileOnAnotherCanvas(canvas: HTMLCanvasElement, tile: HexTile, zoomLevel: number) {
+        let explored = tile['explored'] || !([Tool.USE, Tool.EXPLORE].includes(configuration.currentTool))
+        let context = canvas.getContext('2d')!
+        let XPos: number = 0
+        let YPos: number = 0
+
+        if (explored) {
+            context.drawImage(this.zoomLevelImages[zoomLevel].colorMap[tile.color.id], XPos, YPos)
+        } else {
+            context.drawImage(this.zoomLevelImages[zoomLevel].colorMap[0], XPos, YPos)
+        }
+        if (tile.image != 'nothing' && tile.image != '') {
+            let baseImage = this.baseImages[tile.image]
+            context.drawImage(baseImage, XPos - (baseImage.width - this.zoomLevelImages[zoomLevel].width) / 2, YPos - (baseImage.height - this.zoomLevelImages[zoomLevel].height) / 2)
+        }
+    }
+
+    tileWidth(zoomLevel: number) {
+        return this.zoomLevelImages[zoomLevel].width
+    }
+    tileHeight(zoomLevel: number) {
+        return this.zoomLevelImages[zoomLevel].height
     }
 }

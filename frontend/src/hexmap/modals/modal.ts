@@ -1,23 +1,29 @@
-export abstract class Modal {
-    title: string
-    fullScreenDiv: HTMLDivElement = document.createElement('div')
-    mainDiv: HTMLDivElement = document.createElement('div')
-    bodyDiv: HTMLDivElement = document.createElement('div')
-    titleDiv: HTMLDivElement = document.createElement('div')
+import * as doT from 'dot'
 
-    constructor(title: string) {
-        this.title = title
+const template = doT.template(
+    `<div class="modalRoot">
+    <div class="modal">
+        <div class="modalTitle">{{=it.title}}</div>
+        <div class="modalBody"></div>
+    </div>
+</div>`)
+
+export abstract class Modal {
+    fullScreenDiv: Element
+    bodyDiv: Element
+    titleDiv: Element
+
+    constructor(title?: string) {
+        let parser = new DOMParser()
+        let modalHtml = template({ title: title ? '<h2>' + title + '</h2>' : '' })
+        let tempDoc = parser.parseFromString(modalHtml, 'text/html')
+
+        this.fullScreenDiv = tempDoc.querySelector('.modalRoot') !
+        this.bodyDiv = tempDoc.querySelector('.modalBody') !
+        this.titleDiv = tempDoc.querySelector('.modalTitle') !
     }
 
     createModal() {
-        this.fullScreenDiv.className = 'modalRoot'
-        this.mainDiv.className = 'modal'
-        this.titleDiv.className = 'modalTitle'
-        this.bodyDiv.className = 'modalBody'
-        this.mainDiv.appendChild(this.titleDiv)
-        this.mainDiv.appendChild(this.bodyDiv)
-        this.fullScreenDiv.appendChild(this.mainDiv)
-        this.setModalTitle()
         this.setModalContent()
         document.body.appendChild(this.fullScreenDiv)
     }
@@ -26,11 +32,6 @@ export abstract class Modal {
         this.fullScreenDiv.remove()
     }
 
-    setModalTitle() {
-        let titleHeader = document.createElement('h2')
-        titleHeader.innerText = this.title
-        this.titleDiv.appendChild(titleHeader)
-    }
     protected abstract setModalContent(): void;
 
     protected addDefaultRejection(reject: Function) {

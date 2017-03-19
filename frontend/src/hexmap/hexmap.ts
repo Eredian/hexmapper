@@ -1,17 +1,20 @@
-import { Configuration } from './configuration'
+import { configuration } from './configuration'
+import { Tool } from './enums/tool'
 import { HexMapTiles } from './hexmaptiles'
 import { MapDrawer } from './mapdrawer'
 import { CreateMapModal } from './modals/createmapmodal'
 import { LoadMapModal } from './modals/loadmapmodal'
+import { PermissionsModal } from './modals/permissionsmodal'
 import { SaveAsModal } from './modals/saveasmodal'
 import { ViewTileModal } from './modals/viewtilemodal'
 import { HexTile } from './models/hextile'
 import { MapData } from './models/mapdata'
+import { MapPermissions } from './models/mappermissions'
 import { MapSettings } from './models/mapsettings'
 import { TileColor } from './models/tilecolor'
 import { UserSettings } from './models/usersettings'
-import { Server } from './server'
-import { Tool, ToolSwitcher } from './toolswitcher'
+import { currentUser, Server } from './server'
+import { ToolSwitcher } from './toolswitcher'
 
 export enum ColumnPosition {
     LEFT,
@@ -30,14 +33,13 @@ export class HexMap {
 
     private mapName: string
 
-    private configuration: Configuration = new Configuration()
     private mapDrawer: MapDrawer
     private server: Server = new Server()
-    private toolSwitcher: ToolSwitcher = new ToolSwitcher(this.configuration)
+    private toolSwitcher: ToolSwitcher = new ToolSwitcher()
 
     constructor() {
-        this.userSettings.selectedImage = this.configuration.defaultMapImage
-        this.userSettings.selectedColor = this.configuration.defaultMapColor
+        this.userSettings.selectedImage = configuration.defaultMapImage
+        this.userSettings.selectedColor = configuration.defaultMapColor
 
         this.canvas.addEventListener('click', (e) => this.click(e))
         this.canvas.addEventListener('mousedown', (e) => this.click(e))
@@ -65,22 +67,18 @@ export class HexMap {
         this.mapDrawer.repositionMap()
     }
 
-    drawTile(tile: HexTile, selector: boolean = false) {
-        this.mapDrawer.drawTile(tile, selector)
-    }
-
     generateNewDefaultMap() {
-        this.generateNewMap(this.configuration.defaultMapSize, this.configuration.defaultMapSize, this.configuration.defaultMapImage, this.configuration.defaultMapColor)
+        this.generateNewMap(configuration.defaultMapSize, configuration.defaultMapSize, configuration.defaultMapImage, configuration.defaultMapColor)
     }
 
     generateNewMap(width: number, height: number, tileClassName: string, colorClassName: TileColor) {
         let tile = new HexTile()
         tile.image = tileClassName
-        tile.color = colorClassName.id
+        tile.color = colorClassName
         tile.explored = false
-        this.mapData = new MapData(new HexMapTiles(tile, width, height), new MapSettings(), this.configuration.defaultMapColors)
+        this.mapData = new MapData(new HexMapTiles(tile, width, height), new MapSettings(), configuration.defaultMapColors, new MapPermissions(currentUser))
         this.mapTiles = this.mapData.tiles
-        this.mapDrawer = new MapDrawer(this.configuration, this.userSettings, this.mapData)
+        this.mapDrawer = new MapDrawer(this.mapData)
     }
 
     selectHex(hexName: string, colorName: TileColor) {
@@ -93,7 +91,7 @@ export class HexMap {
     }
 
     hexClicked(x: number, y: number) {
-        if ([Tool.DRAW_IMAGE_COLOR, Tool.DRAW_COLOR, Tool.DRAW_IMAGE].includes(this.configuration.currentTool)) {
+        if ([Tool.DRAW_IMAGE_COLOR, Tool.DRAW_COLOR, Tool.DRAW_IMAGE].includes(configuration.currentTool)) {
             if (this.userSettings.bigPaint) {
                 this.mapTiles.forEachInFOV(x, y, (e) => this.changeTile(e))
             } else {
@@ -102,33 +100,40 @@ export class HexMap {
                     this.changeTile(tile)
                 }
             }
-        } else if (this.configuration.currentTool == Tool.EXPLORE) {
+        } else if (configuration.currentTool == Tool.EXPLORE) {
             this.mapTiles.forEachInFOV(x, y, (e) => this.explore(e))
-        } else if (this.configuration.currentTool == Tool.USE) {
-            new ViewTileModal(this.mapTiles.get(x, y) !).createModal()
+        } else if (configuration.currentTool == Tool.USE) {
+            let tile = this.mapTiles.get(x, y)!
+            if (tile.explored) {
+                new ViewTileModal(tile, this.mapDrawer, this.canEdit()).createModal()
+            }
         }
     }
 
+    private canEdit() {
+        return this.mapData.permissions.canEdit(currentUser)
+    }
+
     changeTile(tile: HexTile) {
-        switch (this.configuration.currentTool) {
+        switch (configuration.currentTool) {
             case Tool.DRAW_COLOR:
-                tile.color = this.userSettings.selectedColor.id
+                tile.color = this.userSettings.selectedColor
                 break
             case Tool.DRAW_IMAGE:
                 tile.image = this.userSettings.selectedImage
                 break
             case Tool.DRAW_IMAGE_COLOR:
-                tile.color = this.userSettings.selectedColor.id
+                tile.color = this.userSettings.selectedColor
                 tile.image = this.userSettings.selectedImage
                 break
         }
-        this.drawTile(tile)
+        this.mapDrawer.drawTile(tile)
     }
 
     explore(tile: HexTile) {
         if (tile != null) {
             tile.explored = true
-            this.drawTile(tile)
+            this.mapDrawer.drawTile(tile)
         }
     }
 
@@ -137,34 +142,52 @@ export class HexMap {
     }
 
     async create() {
-        let modal = new CreateMapModal()
-        this.mapName = await modal.waitOnModal()
+        try {
+            let modal = new CreateMapModal()
+            this.mapName = await modal.waitOnModal()
 
-        this.generateNewMap(this.configuration.defaultMapSize, this.configuration.defaultMapSize, this.configuration.defaultMapImage, this.configuration.defaultMapColor)
-        this.deleteMap()
-        this.drawMap()
+            this.generateNewMap(configuration.defaultMapSize, configuration.defaultMapSize, configuration.defaultMapImage, configuration.defaultMapColor)
+            this.deleteMap()
+            this.drawMap()
+        } catch (e) { }
     }
 
     async load() {
-        let modal = new LoadMapModal(await this.getSavedMapNames())
-        let mapName = await modal.waitOnModal()
+        try {
+            let modal = new LoadMapModal(await this.getSavedMapNames())
+            let mapName = await modal.waitOnModal()
 
-        this.mapData = await this.server.getMap(mapName)
-        this.mapTiles = this.mapData.tiles
-        this.mapDrawer = new MapDrawer(this.configuration, this.userSettings, this.mapData)
+            this.mapData = await this.server.getMap(mapName)
 
-        this.deleteMap()
-        this.drawMap()
+            if (!this.mapData.permissions.canEdit(currentUser)) {
+                this.toolSwitcher.switchToTool(Tool.USE)
+            }
+
+            this.mapTiles = this.mapData.tiles
+            this.mapDrawer = new MapDrawer(this.mapData)
+
+            this.deleteMap()
+            this.drawMap()
+        } catch (e) { }
     }
 
+    async changePermissions() {
+        try {
+            let modal = new PermissionsModal(this.mapData.permissions)
+            let newPermissions = await modal.waitOnModal()
+            this.mapData.permissions = newPermissions
+        } catch (e) { }
+    }
     async save() {
-        let modal = new SaveAsModal()
-        let mapName = await modal.waitOnModal()
+        try {
+            let modal = new SaveAsModal()
+            let mapName = await modal.waitOnModal()
 
-        if (mapName == null) {
-            return
-        }
-        this.server.putMap(mapName, this.mapData)
+            if (mapName == null) {
+                return
+            }
+            this.server.putMap(mapName, this.mapData)
+        } catch (e) { }
     }
 
     logInOrOut() {
@@ -221,23 +244,29 @@ export class HexMap {
     }
 
     nextSelectedImage(next: boolean) {
+        if (![Tool.DRAW_IMAGE_COLOR, Tool.DRAW_COLOR, Tool.DRAW_IMAGE].includes(configuration.currentTool)) {
+            return
+        }
         if (next) {
-            if (this.userSettings.currentFavoriteImage == this.configuration.favoriteImages.length - 1) {
+            if (this.userSettings.currentFavoriteImage == configuration.favoriteImages.length - 1) {
                 this.userSettings.currentFavoriteImage = 0
             } else {
                 this.userSettings.currentFavoriteImage++
             }
         } else {
             if (this.userSettings.currentFavoriteImage == 0) {
-                this.userSettings.currentFavoriteImage = this.configuration.favoriteImages.length - 1
+                this.userSettings.currentFavoriteImage = configuration.favoriteImages.length - 1
             } else {
                 this.userSettings.currentFavoriteImage--
             }
         }
-        this.userSettings.selectedImage = this.configuration.favoriteImages[this.userSettings.currentFavoriteImage]
+        this.userSettings.selectedImage = configuration.favoriteImages[this.userSettings.currentFavoriteImage]
         this.drawHexSelector()
     }
     nextSelectedColor(next: boolean) {
+        if (![Tool.DRAW_IMAGE_COLOR, Tool.DRAW_COLOR, Tool.DRAW_IMAGE].includes(configuration.currentTool)) {
+            return
+        }
         let tileColors = this.mapData.tileColors
         let currentSelectedColor = this.userSettings.selectedColor
         if (next) {
@@ -253,21 +282,24 @@ export class HexMap {
                 this.userSettings.selectedColor = tileColors[tileColors.indexOf(currentSelectedColor) - 1]
             }
         }
-        this.userSettings.selectedImage = this.configuration.favoriteImages[this.userSettings.currentFavoriteImage]
-        this.drawHexSelector()
+        if (this.userSettings.selectedColor.id === 0) {
+            this.nextSelectedColor(next)
+        } else {
+            this.drawHexSelector()
+        }
     }
 
     drawHexSelector() {
         let selector: HexTile = new HexTile()
-        selector.color = this.userSettings.selectedColor.id
+        selector.color = this.userSettings.selectedColor
         selector.image = this.userSettings.selectedImage
-        this.drawTile(selector, true)
+        this.mapDrawer.drawTile(selector, true)
     }
 
     addColumn(right: boolean) {
         let tile = new HexTile()
-        tile.image = this.configuration.defaultMapImage
-        tile.color = this.configuration.defaultMapColor.id
+        tile.image = configuration.defaultMapImage
+        tile.color = configuration.defaultMapColor
         tile.explored = false
 
         this.mapTiles.addColumn(right, tile)
@@ -276,8 +308,8 @@ export class HexMap {
 
     addRow(bottom: boolean) {
         let tile = new HexTile()
-        tile.image = this.configuration.defaultMapImage
-        tile.color = this.configuration.defaultMapColor.id
+        tile.image = configuration.defaultMapImage
+        tile.color = configuration.defaultMapColor
         tile.explored = false
 
         this.mapTiles.addRow(bottom, tile)
@@ -293,7 +325,9 @@ export class HexMap {
     }
 
     switchToTool(tool: Tool) {
-        this.toolSwitcher.switchToTool(tool)
-        this.drawMap()
+        if (this.canEdit()) {
+            this.toolSwitcher.switchToTool(tool)
+            this.drawMap()
+        }
     }
 }

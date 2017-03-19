@@ -1,30 +1,29 @@
 import { HexMapTiles } from '../hexmaptiles'
+import { MapPermissions } from './mappermissions'
 import { MapSettings } from './mapsettings'
 import { TileColor } from './tilecolor'
 
 export class MapData {
     tiles: HexMapTiles
-    mapSettings: MapSettings
+    settings: MapSettings
     tileColors: TileColor[]
+    permissions: MapPermissions
 
-    constructor(tiles: HexMapTiles, mapSettings: MapSettings, tileColors: TileColor[]) {
+    constructor(tiles: HexMapTiles, mapSettings: MapSettings, tileColors: TileColor[], MapPermissions: MapPermissions) {
         this.tiles = tiles
-        this.mapSettings = mapSettings
+        this.settings = mapSettings
         this.tileColors = tileColors
+        this.permissions = MapPermissions
     }
 
-
-    exportAsJSON() {
-        return JSON.stringify({ tiles: this.tiles.exportAsTileArray(), mapSettings: this.mapSettings, tileColors: [...this.tileColors] })
-    }
-
-    static createFromJSON(tileData: string): MapData {
+    static fromJSON(tileData: string): MapData {
         let data = JSON.parse(tileData).tiles
 
         let object: MapData = Object.create(MapData.prototype)
-        object.tiles = HexMapTiles.createFromTileArray(data.tiles)
         object.tileColors = data.tileColors
-        object.mapSettings = data.mapSettings
+        object.settings = data.mapSettings
+        object.tiles = HexMapTiles.fromJSON(data.tiles, object.tileColors)
+        object.permissions = MapPermissions.fromJSON(data.permissions)
         return object
     }
 }
