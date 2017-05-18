@@ -20,6 +20,8 @@ export class MapDrawer {
     private context = <CanvasRenderingContext2D>this.canvas.getContext('2d')
     private baseImages: { [key: string]: HTMLImageElement }
 
+    private drawBorders: boolean = false;
+
     constructor(mapData: MapData) {
         this.mapTiles = mapData.tiles
 
@@ -139,8 +141,10 @@ export class MapDrawer {
             this.context.drawImage(this.currentZoomLevel().colorMap[0], XPos, YPos)
         }
 
-        if (this.currentZoomLevel().width > 20) {
+        if (this.currentZoomLevel().width > 20 && this.drawBorders) {
             this.context.drawImage(this.currentZoomLevel().borderColorMap[Math.abs((tile.x ? tile.x : 0) % 7)], XPos, YPos)
+        } else {
+            this.context.drawImage(this.currentZoomLevel().borderColorMap[0], XPos, YPos)
         }
 
         if (tile.image != 'nothing' && tile.image != '' && this.currentZoomLevel().width > 20 && explored) {

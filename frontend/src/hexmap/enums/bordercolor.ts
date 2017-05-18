@@ -1,4 +1,5 @@
 export enum BorderColor {
+    BLACK,
     CR0,
     CR1,
     CR2,

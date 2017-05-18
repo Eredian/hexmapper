@@ -4,7 +4,7 @@ import { HexTile } from '../models/hextile'
 import { HexTileInfo } from '../models/hextileinfo'
 import { Modal } from './modal'
 
-const titleTemplate = doT.template(`<h2>{{=it.title}}</h2>{{? it.name }}<button id="titleEditButton" class="editToggleButton fa fa-pencil"></button>{{?}}`)
+const titleTemplate = doT.template(`<h2>{{=it.title}}</h2>{{? it.canEdit }}<button id="titleEditButton" class="editToggleButton fa fa-pencil"></button>{{?}}`)
 
 const bodyTemplate = doT.template(
     `<div class="tileModalBody">
@@ -15,7 +15,7 @@ const bodyTemplate = doT.template(
         <p id="tileViewFeatureName">{{=it.featureName}}</p>
     </div>`+
     `<div class="tileModalBodyDescription">
-        <p id="tileDescription">{{=it.description}}</p>{{? it.name }}<button id="descriptionEditButton" class="editToggleButton fa fa-pencil"></button>{{?}}
+        <p id="tileDescription">{{=it.description}}</p>{{? it.canEdit }}<button id="descriptionEditButton" class="editToggleButton fa fa-pencil"></button>{{?}}
     </div>
     </div>
     
@@ -27,7 +27,7 @@ const bodyTemplate = doT.template(
     <div id="tileFeatureDescription">
     </div>
     </div>
-    {{? it.name }}
+    {{? it.canEdit }}
     <div>
         <button type="button" id="discardButton" class="button">Discard</button>
         <button type="button" id="saveButton" class="button">Save</button>

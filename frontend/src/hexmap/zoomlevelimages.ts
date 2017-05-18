@@ -45,6 +45,7 @@ export class ZoomLevelImages {
             this.hiddenCanvasContext.drawImage(borderImg, 0, 0)
             let baseBorderImage = this.hiddenCanvasContext.getImageData(0, 0, borderImg.width, borderImg.height)
 
+            this.borderColorMap[BorderColor.BLACK] = this.generateColorImage(0, 0, 0, baseBorderImage)
             this.borderColorMap[BorderColor.CR0] = this.generateColorImage(0, 0, 255, baseBorderImage)
             this.borderColorMap[BorderColor.CR1] = this.generateColorImage(0, 127, 127, baseBorderImage)
             this.borderColorMap[BorderColor.CR2] = this.generateColorImage(0, 255, 0, baseBorderImage)
