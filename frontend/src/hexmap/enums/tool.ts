@@ -3,5 +3,6 @@ export enum Tool {
     DRAW_IMAGE,
     DRAW_COLOR,
     DRAW_IMAGE_COLOR,
-    EXPLORE
+    EXPLORE,
+    EYEDROPPER
 }

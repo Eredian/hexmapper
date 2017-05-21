@@ -1,5 +1,6 @@
 import { HexMap } from './hexmap'
 import { toolButtonsValues } from './toolswitcher'
+import { Tool } from './enums/tool'
 
 export class EventHandler {
     map: HexMap
@@ -52,6 +53,7 @@ export class EventHandler {
         Mousetrap.bind('o', () => this.map.addColumn(true))
         Mousetrap.bind('i', () => this.map.addRow(false))
         Mousetrap.bind('u', () => this.map.addRow(true))
+        Mousetrap.bind('z', () => this.map.switchToTool(Tool.EYEDROPPER))
     }
 
     handleClick(func: Function, e: MouseEvent) {

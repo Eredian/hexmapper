@@ -18,9 +18,7 @@ class Configuration {
         this.zoomLevelMap.push(new ZoomLevel(70, 121, 'zoomlevel2'))
 
         this.favoriteImages.push('nothing')
-        this.favoriteImages.push('stalagmites')
-        this.favoriteImages.push('fungalforest')
-        this.favoriteImages.push('fungalforestheavy')
+        this.favoriteImages.push('anchor')
         this.favoriteImages.push('battle')
         this.favoriteImages.push('battleprimitive')
         this.favoriteImages.push('bridge')
@@ -35,10 +33,17 @@ class Configuration {
         this.favoriteImages.push('cultivatedfarmland')
         this.favoriteImages.push('dragon')
         this.favoriteImages.push('dungeon')
+        this.favoriteImages.push('evergreen')
+        this.favoriteImages.push('evergreenhills')
+        this.favoriteImages.push('evergreenwetlands')
         this.favoriteImages.push('fort')
+        this.favoriteImages.push('grassland')
+        this.favoriteImages.push('heavyevergreen')
         this.favoriteImages.push('mines')
         this.favoriteImages.push('monolith')
         this.favoriteImages.push('monsterlair')
+        this.favoriteImages.push('mountain')
+        this.favoriteImages.push('mountains')
         this.favoriteImages.push('pointofinterest')
         this.favoriteImages.push('shrubland')
         this.favoriteImages.push('skullcrossbones')
@@ -50,7 +55,7 @@ class Configuration {
         this.defaultMapColors.push(new TileColor(1, 'Nothing', 0, 0, 0))
         this.defaultMapColors.push(new TileColor(2, 'Water', 25, 25, 170))
         this.defaultMapColors.push(new TileColor(3, 'Lava', 255, 55, 20))
-        this.defaultMapColors.push(new TileColor(4, 'Grass', 40, 200, 40))
+        this.defaultMapColors.push(new TileColor(4, 'Grass', 0, 104, 10))
         this.defaultMapColor = this.defaultMapColors[4]
 
         this.defaultMapImage = this.favoriteImages[0]

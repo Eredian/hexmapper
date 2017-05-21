@@ -8,7 +8,8 @@ export const toolButtonsValues = new Map<Tool, ToolButtonValues>([
     [Tool.DRAW_IMAGE, new ToolButtonValues('imageToolButton', 'fa-pencil', ['fa-home'])],
     [Tool.DRAW_COLOR, new ToolButtonValues('colorToolButton', 'fa-pencil', ['fa-tint'])],
     [Tool.DRAW_IMAGE_COLOR, new ToolButtonValues('colorImageToolButton', 'fa-pencil', ['fa-tint', 'fa-home'])],
-    [Tool.EXPLORE, new ToolButtonValues('exploreToolButton', 'fa-pencil', ['fa-eye'])]])
+    [Tool.EXPLORE, new ToolButtonValues('exploreToolButton', 'fa-pencil', ['fa-eye'])],
+    [Tool.EYEDROPPER, new ToolButtonValues('eyedropperButton', 'fa-eyedropper')]])
 
 const template = doT.template(
     `<i id="currentToolButton" class="fa fa-fw {{=it.mainClass}} fa-bigx selected overlaid">
@@ -19,6 +20,8 @@ const template = doT.template(
 
 export class ToolSwitcher {
     currentTool: Tool
+    currentlyExploring: boolean = false
+    currentlyConcealing: boolean = false
 
     constructor() {
         this.currentTool = Tool.USE

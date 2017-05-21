@@ -5,7 +5,9 @@ var config = require('./config.js')
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var passport = require('passport')
 var jwt = require('jsonwebtoken');
+var sleep = require('system-sleep');
 
+sleep(8000); // The best fix I got right now for an issue with windows 10 not releasing files.
 var db = new Datastore({ filename: './datafile', autoload: true });
 
 passport.use(new GoogleStrategy({
@@ -79,15 +81,15 @@ app.use(function (req, res, next) {
             req.user = decodedToken.data
         }
     }
-    if (req.user) {
+    if (true || req.user) { //bypassed
         return next();
     } else {
-        return res.status(401).json({ status: 'error', code: 'unauthorized' });
+        //return res.status(401).json({ status: 'error', code: 'unauthorized' });
     }
 });
 
 app.get('/map', async (req, res) => {
-    let documentList = await db.find({ "tiles.permissions.users": req.user }, { name: 1 }).catch(e => res.status(500).json({ message: e.message }));
+    let documentList = await db.find({ "tiles.permissions.users": { $in: [req.user, '*'] } }, { name: 1 }).catch(e => res.status(500).json({ message: e.message }));
 
     if (documentList) {
         documentList = documentList.map(elem => elem._id);
@@ -96,9 +98,8 @@ app.get('/map', async (req, res) => {
 });
 
 app.get('/map/:id', async (req, res) => {
-
     let id = req.params.id;
-    let document = await db.findOne({ "_id": id, "tiles.permissions.users": req.user }).catch(e => res.status(500).json({ message: e.message }));
+    let document = await db.findOne({ "_id": id, "tiles.permissions.users": { $in: [req.user, '*'] } }).catch(e => res.status(500).json({ message: e.message }));
 
     if (!document) {
         res.status(404).send("Map not found.");

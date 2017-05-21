@@ -1,3 +1,4 @@
+import {OperateOnTile} from './interfaces/operateontile';
 import { configuration } from './configuration'
 import { Tool } from './enums/tool'
 import { HexMapTiles } from './hexmaptiles'
@@ -92,21 +93,38 @@ export class HexMap {
 
     hexClicked(x: number, y: number) {
         if ([Tool.DRAW_IMAGE_COLOR, Tool.DRAW_COLOR, Tool.DRAW_IMAGE].includes(configuration.currentTool)) {
-            if (this.userSettings.bigPaint) {
-                this.mapTiles.forEachInFOV(x, y, (e) => this.changeTile(e))
-            } else {
-                let tile = this.mapTiles.get(x, y)
-                if (tile !== null) {
-                    this.changeTile(tile)
-                }
-            }
+            this.clickTilesAccordingToPaint(x, y, (e) => this.changeTile(e))
         } else if (configuration.currentTool == Tool.EXPLORE) {
-            this.mapTiles.forEachInFOV(x, y, (e) => this.explore(e))
+            if (this.toolSwitcher.currentlyExploring) {
+                this.clickTilesAccordingToPaint(x, y, (e) => this.explore(e))
+            } else if(this.toolSwitcher.currentlyConcealing) {
+                this.clickTilesAccordingToPaint(x, y, (e) => this.conceal(e))
+            } else if (this.mapTiles.get(x,y)!.explored) {
+                this.toolSwitcher.currentlyConcealing = true
+                this.clickTilesAccordingToPaint(x, y, (e) => this.conceal(e))
+            } else {
+                this.toolSwitcher.currentlyExploring = true
+                this.clickTilesAccordingToPaint(x, y, (e) => this.explore(e))
+            }
         } else if (configuration.currentTool == Tool.USE) {
             let tile = this.mapTiles.get(x, y)!
             if (tile.explored) {
                 new ViewTileModal(tile, this.mapDrawer, this.canEdit()).createModal()
             }
+        } else if(configuration.currentTool == Tool.EYEDROPPER) {
+            let tile = this.mapTiles.get(x,y)!
+            this.userSettings.selectedColor = tile.color
+            this.userSettings.selectedImage = tile.image
+            this.switchToTool(Tool.DRAW_IMAGE_COLOR)
+        }
+    }
+
+    private clickTilesAccordingToPaint(x: number, y: number, func: OperateOnTile) {
+        let tile = this.mapTiles.get(x,y)
+        if (tile != null && !this.userSettings.bigPaint) {
+            func(tile)
+        } else if(this.userSettings.bigPaint) {
+            this.mapTiles.forEachInFOV(x, y, func)
         }
     }
 
@@ -133,6 +151,13 @@ export class HexMap {
     explore(tile: HexTile) {
         if (tile != null) {
             tile.explored = true
+            this.mapDrawer.drawTile(tile)
+        }
+    }
+
+    conceal(tile: HexTile) {
+        if (tile != null) {
+            tile.explored = false
             this.mapDrawer.drawTile(tile)
         }
     }
@@ -220,9 +245,11 @@ export class HexMap {
         if (e.type == 'mousedown') {
             this.mouseHeld = true
         } else if (e.type == 'mouseup') {
+            this.toolSwitcher.currentlyExploring = false
+            this.toolSwitcher.currentlyConcealing = false
             this.mouseHeld = false
         }
-        if (e.type != 'mousemove' || this.mouseHeld == true) {
+        if (e.type == 'mousedown' || this.mouseHeld == true) {
             if (this.previousMouseMove && Date.now() < this.previousMouseMove[2] + 100) {
                 let xHalfPoint = Math.floor((e.clientX + this.previousMouseMove[0]) / 2)
                 let yHalfPoint = Math.floor((e.clientY + this.previousMouseMove[1]) / 2)
