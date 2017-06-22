@@ -1,7 +1,7 @@
-import {OperateOnTile} from './interfaces/operateontile';
 import { configuration } from './configuration'
 import { Tool } from './enums/tool'
 import { HexMapTiles } from './hexmaptiles'
+import { OperateOnTile } from './interfaces/operateontile'
 import { MapDrawer } from './mapdrawer'
 import { CreateMapModal } from './modals/createmapmodal'
 import { LoadMapModal } from './modals/loadmapmodal'
@@ -97,9 +97,9 @@ export class HexMap {
         } else if (configuration.currentTool == Tool.EXPLORE) {
             if (this.toolSwitcher.currentlyExploring) {
                 this.clickTilesAccordingToPaint(x, y, (e) => this.explore(e))
-            } else if(this.toolSwitcher.currentlyConcealing) {
+            } else if (this.toolSwitcher.currentlyConcealing) {
                 this.clickTilesAccordingToPaint(x, y, (e) => this.conceal(e))
-            } else if (this.mapTiles.get(x,y)!.explored) {
+            } else if (this.mapTiles.get(x, y)!.explored) {
                 this.toolSwitcher.currentlyConcealing = true
                 this.clickTilesAccordingToPaint(x, y, (e) => this.conceal(e))
             } else {
@@ -109,10 +109,12 @@ export class HexMap {
         } else if (configuration.currentTool == Tool.USE) {
             let tile = this.mapTiles.get(x, y)!
             if (tile.explored) {
-                new ViewTileModal(tile, this.mapDrawer, this.canEdit()).createModal()
+                try {
+                    new ViewTileModal(tile, this.mapDrawer, this.canEdit()).createModal()
+                } catch (e) { }
             }
-        } else if(configuration.currentTool == Tool.EYEDROPPER) {
-            let tile = this.mapTiles.get(x,y)!
+        } else if (configuration.currentTool == Tool.EYEDROPPER) {
+            let tile = this.mapTiles.get(x, y)!
             this.userSettings.selectedColor = tile.color
             this.userSettings.selectedImage = tile.image
             this.switchToTool(Tool.DRAW_IMAGE_COLOR)
@@ -120,10 +122,10 @@ export class HexMap {
     }
 
     private clickTilesAccordingToPaint(x: number, y: number, func: OperateOnTile) {
-        let tile = this.mapTiles.get(x,y)
+        let tile = this.mapTiles.get(x, y)
         if (tile != null && !this.userSettings.bigPaint) {
             func(tile)
-        } else if(this.userSettings.bigPaint) {
+        } else if (this.userSettings.bigPaint) {
             this.mapTiles.forEachInFOV(x, y, func)
         }
     }
@@ -220,19 +222,19 @@ export class HexMap {
     }
 
     up() {
-        this.mapDrawer.changeMapPosition(0, -374)
+        this.mapDrawer.changeMapPosition(0, -200)
     }
 
     down() {
-        this.mapDrawer.changeMapPosition(0, 374)
+        this.mapDrawer.changeMapPosition(0, 200)
     }
 
     left() {
-        this.mapDrawer.changeMapPosition(-512, 0)
+        this.mapDrawer.changeMapPosition(-256, 0)
     }
 
     right() {
-        this.mapDrawer.changeMapPosition(512, 0)
+        this.mapDrawer.changeMapPosition(256, 0)
     }
 
     click(e: MouseEvent) {
@@ -343,6 +345,10 @@ export class HexMap {
         this.drawMap()
     }
 
+    removeRow(bottom: boolean) {
+        this.mapTiles.removeRow(bottom)
+    }
+
     resize(width: number, height: number, redraw: boolean) {
         this.canvas.width = width
         this.canvas.height = height
@@ -356,5 +362,22 @@ export class HexMap {
             this.toolSwitcher.switchToTool(tool)
             this.drawMap()
         }
+    }
+
+    resetMapColors() {
+        this.mapData.tileColors.forEach((tileColor) => {
+            let defaultTileColor = configuration.defaultMapColors.find((defaultTileColor) => { return defaultTileColor.id == tileColor.id })
+            if (defaultTileColor) {
+                tileColor.R = defaultTileColor.R
+                tileColor.G = defaultTileColor.G
+                tileColor.B = defaultTileColor.B
+            }
+        })
+        configuration.defaultMapColors.forEach((defaultTileColor) => {
+            if (!this.mapData.tileColors.find((tileColor) => { return tileColor.id == defaultTileColor.id })) {
+                this.mapData.tileColors.push(defaultTileColor)
+            }
+        })
+        this.mapDrawer = new MapDrawer(this.mapData)
     }
 }

@@ -19,11 +19,14 @@ export class HexTile {
         let tile = new HexTile()
         tile.x = hexTileForExport.x
         tile.y = hexTileForExport.y
-        tile.color = tileColors[hexTileForExport.color]
-        tile.borderColor = hexTileForExport.borderColor
-        tile.image = hexTileForExport.image
-        tile.explored = hexTileForExport.explored
-        tile.info = hexTileForExport.info
+        let drawingData = hexTileForExport.drawingData
+        tile.color = tileColors[drawingData.color]
+        tile.borderColor = drawingData.borderColor
+        tile.image = drawingData.image
+        tile.explored = drawingData.explored
+        if (hexTileForExport.extraData) {
+            tile.info = hexTileForExport.extraData
+        }
         return tile
     }
 }
@@ -31,19 +34,20 @@ export class HexTile {
 export class HexTileForExport {
     x: number
     y: number
-    color: number
-    borderColor: BorderColor
-    image: string
-    explored: boolean = false
-    info: HexTileInfo
+    drawingData: DrawingData
+    extraData: HexTileInfo
 
     constructor(hexTile: HexTile) {
         this.x = hexTile.x
         this.y = hexTile.y
-        this.color = hexTile.color.id
-        this.borderColor = hexTile.borderColor
-        this.image = hexTile.image
-        this.explored = hexTile.explored
-        this.info = hexTile.info
+        this.drawingData = { color: hexTile.color.id, borderColor: hexTile.borderColor, image: hexTile.image, explored: hexTile.explored }
+        this.extraData = hexTile.info
     }
+}
+
+class DrawingData {
+    color: number
+    borderColor: BorderColor
+    image: string
+    explored: boolean
 }

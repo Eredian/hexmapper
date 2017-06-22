@@ -17,7 +17,7 @@ export class MapData {
     }
 
     static fromJSON(tileData: string): MapData {
-        let data = JSON.parse(tileData).tiles
+        let data = JSON.parse(tileData)
 
         let object: MapData = Object.create(MapData.prototype)
         object.tileColors = data.tileColors

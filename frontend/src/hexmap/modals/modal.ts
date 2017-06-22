@@ -9,11 +9,16 @@ const template = doT.template(
 </div>`)
 
 export abstract class Modal {
+    private static modalPresent: boolean = false
+
     fullScreenDiv: Element
     bodyDiv: Element
     titleDiv: Element
 
     constructor(title?: string) {
+        if (Modal.modalPresent) {
+            throw 'Modal is already present'
+        }
         let parser = new DOMParser()
         let modalHtml = template({ title: title ? '<h2>' + title + '</h2>' : '' })
         let tempDoc = parser.parseFromString(modalHtml, 'text/html')
@@ -24,11 +29,13 @@ export abstract class Modal {
     }
 
     createModal() {
+        Modal.modalPresent = true
         this.setModalContent()
         document.body.appendChild(this.fullScreenDiv)
     }
 
     deleteModal() {
+        Modal.modalPresent = false
         this.fullScreenDiv.remove()
     }
 

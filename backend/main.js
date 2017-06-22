@@ -1,14 +1,19 @@
 var express = require('express');
 var bodyParser = require('body-parser');
-var Datastore = require('nedb-promise');
 var config = require('./config.js')
 var GoogleStrategy = require('passport-google-oauth20').Strategy;
 var passport = require('passport')
 var jwt = require('jsonwebtoken');
-var sleep = require('system-sleep');
+var mysql = require('mysql2/promise');
+var errorHandler = require('errorhandler')
 
-sleep(8000); // The best fix I got right now for an issue with windows 10 not releasing files.
-var db = new Datastore({ filename: './datafile', autoload: true });
+var connection;
+mysql.createConnection({
+    host: config.mysql.url,
+    user: config.mysql.username,
+    password: config.mysql.password,
+    database: config.mysql.database
+}).then((conn) => { connection = conn });
 
 passport.use(new GoogleStrategy({
     clientID: config.oauth.clientId,
@@ -30,6 +35,7 @@ passport.deserializeUser(function (user, done) {
 
 var app = express();
 
+app.use(errorHandler());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json({ limit: '50mb' }));
 app.use(function (req, res, next) {
@@ -77,48 +83,73 @@ app.use(function (req, res, next) {
         var auth = req.headers.authorization;
         if (auth && auth.startsWith("Bearer ")) {
             var token = auth.slice(7)
-            var decodedToken = jwt.verify(token, config.jwt.secret)
-            req.user = decodedToken.data
+            try {
+                var decodedToken = jwt.verify(token, config.jwt.secret)
+                req.user = decodedToken.data
+            } catch (error) {
+                console.log(error) //TODO invalid token
+            }
         }
     }
-    if (true || req.user) { //bypassed
-        return next();
-    } else {
-        //return res.status(401).json({ status: 'error', code: 'unauthorized' });
-    }
+    return next();
+    //return res.status(401).json({ status: 'error', code: 'unauthorized' });
 });
 
 app.get('/map', async (req, res) => {
-    let documentList = await db.find({ "tiles.permissions.users": { $in: [req.user, '*'] } }, { name: 1 }).catch(e => res.status(500).json({ message: e.message }));
+    const [rows] = await connection.query("SELECT DISTINCT mapName from permission WHERE email IN(?, '*')", req.user);
 
-    if (documentList) {
-        documentList = documentList.map(elem => elem._id);
-        res.send(documentList);
+    if (rows) {
+        res.send(rows.map(elem => elem.mapName));
     }
 });
 
 app.get('/map/:id', async (req, res) => {
     let id = req.params.id;
-    let document = await db.findOne({ "_id": id, "tiles.permissions.users": { $in: [req.user, '*'] } }).catch(e => res.status(500).json({ message: e.message }));
-
-    if (!document) {
+    const [permissions] = await connection.query("SELECT * FROM permission WHERE mapName = ?", id);
+    if (permissions.length == 0) {
         res.status(404).send("Map not found.");
-    } else {
-        res.send(document);
+        return;
     }
+    if (!permissions.some(permission => { return permission.email == "*" || permission.email == req.user })) {
+        res.status(404).send("Map not found.");
+        return;
+    }
+    const [tiles] = await connection.query("SELECT * FROM tile WHERE mapName = ?", id);
+    const [tileColors] = await connection.query("SELECT * FROM tileColor WHERE mapName = ?", id);
+
+    res.send({ mapName: id, tiles: tiles, permissions: permissions, tileColors: tileColors });
 });
 
 app.post('/map/:id', async (req, res) => {
     let id = req.params.id;
     let body = req.body;
+    let updating = false;
 
     try {
-        var updateResult = await db.update({ _id: id }, { _id: id, tiles: body }, { upsert: true });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-        return;
+        await connection.query('INSERT INTO map SET ?', { name: id })
+    } catch (e) {
+        if (e.code == "ER_DUP_ENTRY") {
+            await connection.query('DELETE FROM map WHERE name = ?', id)
+            await connection.query('INSERT INTO map SET ?', { name: id })
+            updating = true;
+        } else {
+            throw e
+        }
     }
-    if (updateResult[2] === true) {
+
+    let tileArray = []
+    body.tiles.forEach((tile) => { tileArray.push([tile.x, tile.y, id, JSON.stringify(tile.drawingData), JSON.stringify(tile.extraData)]) })
+    await connection.query('INSERT INTO tile (`x`, `y`, `mapName`, `drawingData`, `extraData`) VALUES ?', [tileArray]);
+
+    let permissionArray = []
+    body.permissions.forEach((permission) => { permissionArray.push([permission.email, permission.type, id]) })
+    await connection.query('INSERT INTO permission (`email`, `type`, `mapName`) VALUES ?', [permissionArray])
+
+    let tileColorArray = []
+    body.tileColors.forEach((tileColor) => { tileColorArray.push([tileColor.id, id, tileColor.name, tileColor.R, tileColor.G, tileColor.B]) })
+    await connection.query('INSERT INTO tileColor (`id`, `mapName`, `name`, `R`, `G`, `B`) VALUES ?', [tileColorArray])
+
+    if (updating) {
         res.sendStatus(201);
     } else {
         res.sendStatus(200);

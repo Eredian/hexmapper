@@ -4,7 +4,7 @@ module.exports = {
     node: {
         fs: "empty"
     },
-    entry: ["babel-polyfill", "./src/hexmapper.ts"],
+    entry: ["babel-polyfill", 'whatwg-fetch', "./src/hexmapper.ts"],
     output: {
         filename: "./dist/bundle.js",
     },

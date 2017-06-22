@@ -62,7 +62,7 @@ export class Server {
 
     private async call(url: string, method?: string, headers?: Headers, body?: string) {
         if (!headers) {
-            headers = new Headers
+            headers = new Headers()
         }
         let parameters: RequestInit = {}
         if (method) {

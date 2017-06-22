@@ -8,4 +8,10 @@ config.oauth.redirectUri = "";
 config.jwt = {}
 config.jwt.secret = ""
 
+config.mysql = {}
+config.mysql.url = ""
+config.mysql.username = ""
+config.mysql.password = ""
+config.mysql.database = ""
+
 module.exports = config;

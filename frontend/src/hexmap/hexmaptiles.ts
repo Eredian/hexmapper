@@ -20,7 +20,19 @@ export class HexMapTiles {
             this.invertedTiles.set(y, new Map<number, HexTile>())
         }
         this.invertedTiles.get(y)!.set(x, value)
+    }
 
+    remove(x: number, y: number): void {
+        if (this.tiles.has(x) && this.tiles.get(x)!.has(y)) {
+            this.tiles.get(x)!.delete(y)
+            if (this.tiles.get(x)!.size == 0) {
+                this.tiles.delete(x)
+            }
+            this.invertedTiles.get(y)!.delete(x)
+            if (this.invertedTiles.get(y)!.size == 0) {
+                this.invertedTiles.delete(y)
+            }
+        }
     }
 
     has(x: number, y: number): boolean {
@@ -97,6 +109,16 @@ export class HexMapTiles {
 
             this.add(secondTile.x, secondTile.y, secondTile)
         })
+    }
+
+    removeRow(bottom: boolean) {
+        if (!bottom) {
+            let topLeftTile = this.getTopLeftTile()
+            this.invertedTiles.get(topLeftTile.y)!.forEach((tile) => this.remove(tile.x, tile.y))
+        } else {
+            let bottomRightTile = this.getBottomRightTile()
+            this.invertedTiles.get(bottomRightTile.y)!.forEach((tile) => this.remove(tile.x, tile.y))
+        }
     }
 
     getWidth(): number {

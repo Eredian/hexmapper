@@ -36,6 +36,9 @@ class Configuration {
         this.favoriteImages.push('evergreen')
         this.favoriteImages.push('evergreenhills')
         this.favoriteImages.push('evergreenwetlands')
+        this.favoriteImages.push('swamp')
+        this.favoriteImages.push('jungle')
+        this.favoriteImages.push('junglewetlands')
         this.favoriteImages.push('fort')
         this.favoriteImages.push('grassland')
         this.favoriteImages.push('heavyevergreen')
@@ -44,6 +47,8 @@ class Configuration {
         this.favoriteImages.push('monsterlair')
         this.favoriteImages.push('mountain')
         this.favoriteImages.push('mountains')
+        this.favoriteImages.push('snowcappedmountains')
+        this.favoriteImages.push('evergreenmountains')
         this.favoriteImages.push('pointofinterest')
         this.favoriteImages.push('shrubland')
         this.favoriteImages.push('skullcrossbones')
@@ -55,7 +60,8 @@ class Configuration {
         this.defaultMapColors.push(new TileColor(1, 'Nothing', 0, 0, 0))
         this.defaultMapColors.push(new TileColor(2, 'Water', 25, 25, 170))
         this.defaultMapColors.push(new TileColor(3, 'Lava', 255, 55, 20))
-        this.defaultMapColors.push(new TileColor(4, 'Grass', 0, 104, 10))
+        this.defaultMapColors.push(new TileColor(4, 'Grass', 8, 219, 43))
+        this.defaultMapColors.push(new TileColor(5, 'Sand', 237, 221, 9))
         this.defaultMapColor = this.defaultMapColors[4]
 
         this.defaultMapImage = this.favoriteImages[0]

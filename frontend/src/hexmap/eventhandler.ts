@@ -1,6 +1,6 @@
+import { Tool } from './enums/tool'
 import { HexMap } from './hexmap'
 import { toolButtonsValues } from './toolswitcher'
-import { Tool } from './enums/tool'
 
 export class EventHandler {
     map: HexMap

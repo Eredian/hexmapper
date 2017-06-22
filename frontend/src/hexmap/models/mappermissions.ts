@@ -12,23 +12,33 @@ export class MapPermissions {
     }
 
     toJSON() {
-        return new MapPermissionsForExport(this)
+        let permissionsToJson: MapPermissionsForExport[] = []
+        this.owners.forEach((owner) => { permissionsToJson.push(new MapPermissionsForExport(owner, 'owner')) })
+        this.users.forEach((user) => { permissionsToJson.push(new MapPermissionsForExport(user, 'user')) })
+        return permissionsToJson
     }
 
-    static fromJSON(mapPermissionsForExport: MapPermissionsForExport) {
+    static fromJSON(mapPermissionsForExport: MapPermissionsForExport[]) {
         let object: MapPermissions = Object.create(MapPermissions.prototype)
-        object.users = new Set(mapPermissionsForExport.users)
-        object.owners = new Set(mapPermissionsForExport.owners)
+        object.owners = new Set()
+        object.users = new Set()
+        mapPermissionsForExport.forEach((permission) => {
+            if (permission.type == 'owner') {
+                object.owners.add(permission.email)
+            } else {
+                object.users.add(permission.email)
+            }
+        })
         return object
     }
 }
 
 export class MapPermissionsForExport {
-    owners: string[]
-    users: string[]
+    email: string
+    type: string
 
-    constructor(mapPermissions: MapPermissions) {
-        this.owners = [...mapPermissions.owners]
-        this.users = [...mapPermissions.users]
+    constructor(email: string, type: string) {
+        this.email = email
+        this.type = type
     }
 }
