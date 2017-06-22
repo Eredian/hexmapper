@@ -1,7 +1,6 @@
 frontend/img/images/*
 
 Thumbs.db
-maps*
 /tsconfig.json
 tasks.json
 .settings
