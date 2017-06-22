@@ -7,13 +7,15 @@ var jwt = require('jsonwebtoken');
 var mysql = require('mysql2/promise');
 var errorHandler = require('errorhandler')
 
-var connection;
-mysql.createConnection({
+let wrap = fn => (...args) => fn(...args).catch(args[2])
+
+var connection = mysql.createPool({
+    connectionLimit: 10,
     host: config.mysql.url,
     user: config.mysql.username,
     password: config.mysql.password,
     database: config.mysql.database
-}).then((conn) => { connection = conn });
+});
 
 passport.use(new GoogleStrategy({
     clientID: config.oauth.clientId,
@@ -95,7 +97,7 @@ app.use(function (req, res, next) {
     //return res.status(401).json({ status: 'error', code: 'unauthorized' });
 });
 
-app.get('/map', async (req, res) => {
+app.get('/map', wrap(async (req, res) => {
     let rows
     if (req.user) {
         [rows] = await connection.query("SELECT DISTINCT mapName from permission WHERE email IN(?, '*')", req.user);
@@ -105,9 +107,9 @@ app.get('/map', async (req, res) => {
     if (rows) {
         res.send(rows.map(elem => elem.mapName));
     }
-});
+}));
 
-app.get('/map/:id', async (req, res) => {
+app.get('/map/:id', wrap(async (req, res) => {
     let id = req.params.id;
     const [permissions] = await connection.query("SELECT * FROM permission WHERE mapName = ?", id);
     if (permissions.length == 0) {
@@ -122,9 +124,9 @@ app.get('/map/:id', async (req, res) => {
     const [tileColors] = await connection.query("SELECT * FROM tileColor WHERE mapName = ?", id);
 
     res.send({ mapName: id, tiles: tiles, permissions: permissions, tileColors: tileColors });
-});
+}));
 
-app.post('/map/:id', async (req, res) => {
+app.post('/map/:id', wrap(async (req, res) => {
     let id = req.params.id;
     let body = req.body;
     let updating = false;
@@ -158,7 +160,7 @@ app.post('/map/:id', async (req, res) => {
     } else {
         res.sendStatus(200);
     }
-});
+}));
 
 app.listen(config.listeningPort, config.listeningDomain, function () {
     console.log('App is started.');
