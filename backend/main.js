@@ -96,8 +96,12 @@ app.use(function (req, res, next) {
 });
 
 app.get('/map', async (req, res) => {
-    const [rows] = await connection.query("SELECT DISTINCT mapName from permission WHERE email IN(?, '*')", req.user);
-
+    let rows
+    if (req.user) {
+        [rows] = await connection.query("SELECT DISTINCT mapName from permission WHERE email IN(?, '*')", req.user);
+    } else {
+        [rows] = await connection.query("SELECT DISTINCT mapName from permission WHERE email IN('*')");
+    }
     if (rows) {
         res.send(rows.map(elem => elem.mapName));
     }
