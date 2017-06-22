@@ -2,7 +2,7 @@ frontend/img/images/*
 
 Thumbs.db
 maps*
-tsconfig.json
+/tsconfig.json
 tasks.json
 .settings
 dist

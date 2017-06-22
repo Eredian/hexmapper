@@ -1,0 +1,24 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "removeComments": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "strictNullChecks": true,
+        "preserveConstEnums": true,
+        "sourceMap": true,
+        "rootDir": "./src",
+        "baseUrl": ".",
+        "noEmitOnError": false,
+        "lib": [
+            "es2016",
+            "dom"
+        ],
+        "typeRoots": [
+            "typings"
+        ]
+    }
+}
