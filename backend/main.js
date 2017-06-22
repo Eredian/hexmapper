@@ -160,6 +160,6 @@ app.post('/map/:id', async (req, res) => {
     }
 });
 
-app.listen(8081, function () {
+app.listen(config.listeningPort, config.listeningDomain, function () {
     console.log('App is started.');
 });

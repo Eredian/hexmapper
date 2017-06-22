@@ -9,9 +9,12 @@ config.jwt = {}
 config.jwt.secret = ""
 
 config.mysql = {}
-config.mysql.url = ""
+config.mysql.url = "localhost"
 config.mysql.username = ""
 config.mysql.password = ""
-config.mysql.database = ""
+config.mysql.database = "hexmap"
+
+config.listeningPort = 8081
+config.listeningDomain = "localhost"
 
 module.exports = config;
