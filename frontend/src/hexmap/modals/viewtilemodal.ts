@@ -17,6 +17,10 @@ const bodyTemplate = doT.template(
     `<div class="tileModalBodyDescription">
         <p id="tileDescription">{{=it.description}}</p>{{? it.canEdit }}<button id="descriptionEditButton" class="editToggleButton fa fa-pencil"></button>{{?}}
     </div>
+    {{? it.canEdit }}
+    <div class="tileModalBodyDescription">
+        <p id="tileSecretDescription">{{=it.secretDescription}}</p><button id="secretDescriptionEditButton" class="editToggleButton fa fa-pencil"></button>
+    </div>{{?}}
     </div>
     
     <div id="tileFeatureSection">
@@ -44,6 +48,7 @@ export class ViewTileModal extends Modal {
         if (!tile.info) {
             tile.info = new HexTileInfo(`${tile.x},${tile.y}`)
             tile.info.description = 'This description hasn\'t been done yet.'
+            tile.info.secretDescription = 'This description hasn\'t been done yet.'
         }
         super()
         this.tile = tile
@@ -54,6 +59,7 @@ export class ViewTileModal extends Modal {
     setModalContent() {
         this.bodyDiv.innerHTML += bodyTemplate({
             description: this.tile.info.description,
+            secretDescription: this.tile.info.secretDescription,
             canvasWidth: this.mapDrawer.tileWidth(2), canvasHeight: this.mapDrawer.tileHeight(2),
             terrainName: this.tile.color.name, featureName: this.tile.image,
             canEdit: this.canEdit
@@ -72,6 +78,8 @@ export class ViewTileModal extends Modal {
 
             this.bodyDiv.querySelector('#descriptionEditButton')!.addEventListener('click', () =>
             { this.toggleEditable(<HTMLParagraphElement>this.bodyDiv.querySelector('#tileDescription')!) })
+            this.bodyDiv.querySelector('#secretDescriptionEditButton')!.addEventListener('click', () =>
+            { this.toggleEditable(<HTMLParagraphElement>this.bodyDiv.querySelector('#tileSecretDescription')!) })
         }
 
         let promise = new Promise((resolve, reject) => {
@@ -102,5 +110,6 @@ export class ViewTileModal extends Modal {
     saveTile() {
         this.tile.info.name = (this.titleDiv.querySelector('h2'))!.innerText
         this.tile.info.description = (<HTMLParagraphElement>this.bodyDiv.querySelector('#tileDescription')).innerText
+        this.tile.info.secretDescription = (<HTMLParagraphElement>this.bodyDiv.querySelector('#tileSecretDescription')).innerText
     }
 }

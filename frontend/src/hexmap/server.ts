@@ -4,7 +4,7 @@ export let currentUser = ''
 
 export class Server {
 
-    private backEndPath: string = `http://${window.location.hostname}:8081/`
+    private backEndPath: string = `http://${window.location.hostname}/backend/`
     private authPath: string = this.backEndPath + 'auth/'
     private mapPath: string = this.backEndPath + 'map/'
 
@@ -53,7 +53,7 @@ export class Server {
             this.displayLoggedOut()
         } else {
             window.addEventListener('message', (event) => { return this.handleMessage(event) })
-            var newWindow = window.open(this.authPath + `authorize?redirect=http://${window.location.hostname}:8080/frontend`, 'name', 'height=600,width=450')
+            var newWindow = window.open(this.authPath + `authorize?redirect=http://${window.location.hostname}/frontend`, 'name', 'height=600,width=450')
             if (window.focus) {
                 newWindow.focus()
             }
