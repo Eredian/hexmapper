@@ -41,6 +41,15 @@ window.onload = function () {
         }
     }, true)
 
+    document.getElementById('selectorListToggleButton')!.addEventListener('mouseup', () => {
+        let classList = document.getElementById('selectorList')!.classList
+        if (classList.contains('visible')) {
+            classList.remove('visible')
+        } else {
+            classList.add('visible')
+        }
+    })
+
     map = new HexMap();
     (<any>window).map = map
     map.generateNewDefaultMap()

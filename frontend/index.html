@@ -22,46 +22,49 @@
         <i class="fa fa-fw fa-arrow-down fa-bigx translate-button" id="downButton"></i>
         <i class="fa fa-fw fa-arrow-left fa-bigx translate-button" id="leftButton"></i>
         <i class="fa fa-fw fa-arrow-right fa-bigx translate-button" id="rightButton"></i>
-        <ul id="selectorList">
-            <li id="zoomInButton">
-                <i class="fa fa-fw fa-search-plus fa-bigx"></i>
-            </li>
-            <li id="zoomOutButton">
-                <i class="fa fa-fw fa-search-minus fa-bigx"></i>
-            </li>
-            <li id="mapCreateButton">
-                <i class="fa fa-fw fa-file fa-bigx"></i>
-            </li>
-            <li id="mapSaveButton">
-                <a class="fa fa-fw fa-floppy-o fa-bigx"></a>
-            </li>
-            <li id="mapLoadButton">
-                <i class="fa fa-fw fa-cloud-download fa-bigx"></i>
-            </li>
-            <li id="logInOrOutButton">
-                <i class="fa fa-fw fa-sign-in fa-bigx"></i>
-            </li>
-            <li id="changePermissionsButton">
-                <i class="fa fa-fw fa-key fa-bigx"></i>
-            </li>
-            <li id="toolButtons">
-                <i id="currentToolButton" class="fa fa-fw fa-mouse-pointer fa-bigx"></i>
-                <ul id="selectionToolButtons" class="hidden">
-                    <li><i id="useToolButton" class="fa fa-fw fa-mouse-pointer fa-bigx selected"></i></li>
-                    <li><i id="colorToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-tint"></i></i>
-                    </li>
-                    <li><i id="imageToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-home"></i></i>
-                    </li>
-                    <li><i id="colorImageToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-home"></i>
-                        <i class="fa fa-fw fa-tint"></i>
-                        </i>
-                    </li>
-                    <li><i id="exploreToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-eye"></i></i>
-                    </li>
-                    <li><i id="eyedropperButton" class="fa fa-fw fa-eyedropper fa-bigx"></i></li>
-                </ul>
-            </li>
-        </ul>
+        <div id="selectorListView">
+            <div id="selectorListToggleButton">Menu<i class="fa fa-fw fa-bars fa-bigx"></i></div>
+            <ul id="selectorList">
+                <li id="zoomInButton">
+                    Zoom In<i class="fa fa-fw fa-search-plus fa-bigx"></i>
+                </li>
+                <li id="zoomOutButton">
+                    Zoom Out<i class="fa fa-fw fa-search-minus fa-bigx"></i>
+                </li>
+                <li id="mapCreateButton">
+                    Create New<i class="fa fa-fw fa-file fa-bigx"></i>
+                </li>
+                <li id="mapSaveButton">
+                    Save<a class="fa fa-fw fa-floppy-o fa-bigx"></a>
+                </li>
+                <li id="mapLoadButton">
+                    Load<i class="fa fa-fw fa-cloud-download fa-bigx"></i>
+                </li>
+                <li id="logInOrOutButton">
+                    Log In/Out<i class="fa fa-fw fa-sign-in fa-bigx"></i>
+                </li>
+                <li id="changePermissionsButton">
+                    Permissions<i class="fa fa-fw fa-key fa-bigx"></i>
+                </li>
+                <li id="toolButtons">
+                    Tool<i id="currentToolButton" class="fa fa-fw fa-mouse-pointer fa-bigx"></i>
+                    <ul id="selectionToolButtons" class="hidden">
+                        <li><i id="useToolButton" class="fa fa-fw fa-mouse-pointer fa-bigx selected"></i></li>
+                        <li><i id="colorToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-tint"></i></i>
+                        </li>
+                        <li><i id="imageToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-home"></i></i>
+                        </li>
+                        <li><i id="colorImageToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-home"></i>
+                            <i class="fa fa-fw fa-tint"></i>
+                            </i>
+                        </li>
+                        <li><i id="exploreToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-eye"></i></i>
+                        </li>
+                        <li><i id="eyedropperButton" class="fa fa-fw fa-eyedropper fa-bigx"></i></li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
     </div>
 </body>
 

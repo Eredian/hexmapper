@@ -1,14 +1,13 @@
-export class HexTileInfo {
+export class HexTileFeature {
     name: string
+    image: string
     description: string
     secretDescription: string
 
-    features: HexTileInfo[]
-
-    constructor(name: string) {
+    constructor(name: string, image: string) {
         this.name = name
+        this.image = image
         this.description = ''
         this.secretDescription = ''
-        this.features = []
     }
 }

@@ -61,7 +61,7 @@ ul {
     list-style-type: none;
 }
 
-#selectorList {
+#selectorListView {
     position: absolute;
     top: 0;
     right: 0;
@@ -71,6 +71,15 @@ ul {
     backface-visibility: hidden;
     pointer-events: all;
     padding: 4px;
+    text-align: right;
+}
+
+#selectorList {
+    display: none;
+}
+
+#selectorList.visible {
+    display: block;
 }
 
 textarea {
@@ -122,6 +131,11 @@ textarea {
 .fa-bigx {
     font-size: 2.5em;
     cursor: pointer;
+    vertical-align: middle;
+}
+
+#toolButtons .fa {
+    vertical-align: middle;
 }
 
 .overlaid i:first-child {

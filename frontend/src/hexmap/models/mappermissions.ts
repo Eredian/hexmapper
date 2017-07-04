@@ -1,3 +1,5 @@
+import { currentUser } from '../server'
+
 export class MapPermissions {
     owners: Set<string>
     users: Set<string>
@@ -9,6 +11,10 @@ export class MapPermissions {
 
     canEdit(user: string) {
         return this.owners.has(user)
+    }
+
+    currentUserCanEdit() {
+        return this.owners.has(currentUser)
     }
 
     toJSON() {

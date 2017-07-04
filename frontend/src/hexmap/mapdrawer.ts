@@ -20,10 +20,13 @@ export class MapDrawer {
     private context = <CanvasRenderingContext2D>this.canvas.getContext('2d')
     private baseImages: { [key: string]: HTMLImageElement }
 
-    private drawBorders: boolean = false;
+    private drawBorders: boolean = false
+
+    private isOwner: () => boolean
 
     constructor(mapData: MapData) {
         this.mapTiles = mapData.tiles
+        this.isOwner = () => { return mapData.permissions.currentUserCanEdit() }
 
         configuration.zoomLevelMap.forEach((zoomLevel: ZoomLevel) => {
             this.zoomLevelImages.push(new ZoomLevelImages(zoomLevel, mapData.tileColors))
@@ -124,7 +127,8 @@ export class MapDrawer {
     }
 
     drawTile(tile: HexTile, selector: boolean = false, drawHexNumbers: boolean = false) {
-        let explored = tile['explored'] || !([Tool.USE, Tool.EXPLORE].includes(configuration.currentTool))
+        let explored = tile['explored']
+        let showHidden = this.isOwner()
 
         let XPos = selector ? 15 : this.hex_to_pixel(tile).x - this.baseXPos
         let YPos = selector ? 15 : this.hex_to_pixel(tile).y - this.baseYPos
@@ -135,10 +139,23 @@ export class MapDrawer {
         if (XPos - this.currentZoomLevel().width > this.canvas.width || YPos - this.hexHeight > this.canvas.height) {
             return
         }
-        if (explored) {
+        if (explored || showHidden) {
             this.context.drawImage(this.currentZoomLevel().colorMap[tile.color.id], XPos, YPos)
-        } else {
-            this.context.drawImage(this.currentZoomLevel().colorMap[0], XPos, YPos)
+        }
+
+        if (tile.image != 'nothing' && tile.image != '' && (explored || showHidden)) {
+            let baseImage = this.baseImages[tile.image]
+            this.context.drawImage(baseImage, XPos - (baseImage.width - this.currentZoomLevel().width) / 2, YPos - (baseImage.height - this.currentZoomLevel().height) / 2)
+        }
+
+        if (!explored) {
+            if (!showHidden) {
+                this.context.drawImage(this.currentZoomLevel().colorMap[0], XPos, YPos)
+            } else {
+                this.context.globalAlpha = .6
+                this.context.drawImage(this.currentZoomLevel().colorMap[0], XPos, YPos)
+                this.context.globalAlpha = 1
+            }
         }
 
         if (this.currentZoomLevel().width > 20 && this.drawBorders) {
@@ -147,10 +164,6 @@ export class MapDrawer {
             this.context.drawImage(this.currentZoomLevel().borderColorMap[0], XPos, YPos)
         }
 
-        if (tile.image != 'nothing' && tile.image != '' && this.currentZoomLevel().width > 20 && explored) {
-            let baseImage = this.baseImages[tile.image]
-            this.context.drawImage(baseImage, XPos - (baseImage.width - this.currentZoomLevel().width) / 2, YPos - (baseImage.height - this.currentZoomLevel().height) / 2)
-        }
         if (drawHexNumbers) {
             this.context.lineWidth = 1
             this.context.textAlign = 'center'
