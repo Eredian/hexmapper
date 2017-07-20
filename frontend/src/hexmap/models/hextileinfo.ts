@@ -1,9 +1,11 @@
+import { HexTileFeature } from './hextilefeature'
+
 export class HexTileInfo {
     name: string
     description: string
     secretDescription: string
 
-    features: HexTileInfo[]
+    features: HexTileFeature[]
 
     constructor(name: string) {
         this.name = name

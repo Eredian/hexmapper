@@ -1,0 +1,13 @@
+{
+  "name": "svgtopng",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "minimist": "^1.2.0",
+    "pn": "^1.0.0",
+    "svg2png": "^4.1.1"
+  },
+  "scripts": {
+    "convert": "node --harmony svgtopng.js ../frontend/img/svg ../frontend/img/images"
+  }
+}

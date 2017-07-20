@@ -64,8 +64,8 @@ export class MapDrawer {
         if (!configuration.zoomLevelMap[this.zoomLevel + 1]) {
             return
         }
-        this.baseXPos *= Math.floor(configuration.zoomLevelMap[this.zoomLevel + 1].halfWidth / configuration.zoomLevelMap[this.zoomLevel].halfWidth)
-        this.baseYPos *= Math.floor(configuration.zoomLevelMap[this.zoomLevel + 1].halfHeight / configuration.zoomLevelMap[this.zoomLevel].halfHeight)
+        this.baseXPos = Math.floor(this.baseXPos * (configuration.zoomLevelMap[this.zoomLevel + 1].horizontalXOffset / configuration.zoomLevelMap[this.zoomLevel].horizontalXOffset))
+        this.baseYPos = Math.floor(this.baseYPos * (configuration.zoomLevelMap[this.zoomLevel + 1].diagonalYOffset / configuration.zoomLevelMap[this.zoomLevel].diagonalYOffset))
         this.zoomLevel++
         this.updateHexDimensions()
         this.deleteMap()
@@ -76,8 +76,8 @@ export class MapDrawer {
         if (!configuration.zoomLevelMap[this.zoomLevel - 1]) {
             return
         }
-        this.baseXPos *= Math.floor(configuration.zoomLevelMap[this.zoomLevel - 1].halfWidth / configuration.zoomLevelMap[this.zoomLevel].halfWidth)
-        this.baseYPos *= Math.floor(configuration.zoomLevelMap[this.zoomLevel - 1].halfHeight / configuration.zoomLevelMap[this.zoomLevel].halfHeight)
+        this.baseXPos = Math.floor(this.baseXPos * (configuration.zoomLevelMap[this.zoomLevel - 1].horizontalXOffset / configuration.zoomLevelMap[this.zoomLevel].horizontalXOffset))
+        this.baseYPos = Math.floor(this.baseYPos * (configuration.zoomLevelMap[this.zoomLevel - 1].diagonalYOffset / configuration.zoomLevelMap[this.zoomLevel].diagonalYOffset))
         this.zoomLevel--
         this.updateHexDimensions()
         this.deleteMap()
@@ -133,19 +133,39 @@ export class MapDrawer {
         let XPos = selector ? 15 : this.hex_to_pixel(tile).x - this.baseXPos
         let YPos = selector ? 15 : this.hex_to_pixel(tile).y - this.baseYPos
 
-        if (XPos + this.currentZoomLevel().width < 0 || YPos + this.hexHeight < 0) {
+        if (XPos + this.currentZoomLevel().width < 0 || YPos + this.currentZoomLevel().height < 0) {
             return
         }
-        if (XPos - this.currentZoomLevel().width > this.canvas.width || YPos - this.hexHeight > this.canvas.height) {
+        if (XPos - this.currentZoomLevel().width > this.canvas.width || YPos - this.currentZoomLevel().height > this.canvas.height) {
             return
         }
         if (explored || showHidden) {
             this.context.drawImage(this.currentZoomLevel().colorMap[tile.color.id], XPos, YPos)
         }
 
-        if (tile.image != 'nothing' && tile.image != '' && (explored || showHidden)) {
+        if (tile.image != 'nothing' && tile.image != '' && (explored || showHidden) && this.currentZoomLevel().width >= 20) {
             let baseImage = this.baseImages[tile.image]
-            this.context.drawImage(baseImage, XPos - (baseImage.width - this.currentZoomLevel().width) / 2, YPos - (baseImage.height - this.currentZoomLevel().height) / 2)
+            let imageXPos = XPos - (baseImage.width - this.currentZoomLevel().width) / 2
+            let imageYPos = YPos - (baseImage.height - this.currentZoomLevel().height) / 2
+            this.context.drawImage(baseImage, imageXPos, imageYPos)
+            if (tile.info && tile.info.features && this.currentZoomLevel().width >= 80) {
+                if (tile.info.features[0]) {
+                    let baseImage = this.baseImages[tile.info.features[0].image]
+                    this.context.drawImage(baseImage, imageXPos, imageYPos - baseImage.height - 1)
+                }
+                if (tile.info.features[1]) {
+                    let baseImage = this.baseImages[tile.info.features[1].image]
+                    this.context.drawImage(baseImage, imageXPos + baseImage.height, imageYPos)
+                }
+                if (tile.info.features[2]) {
+                    let baseImage = this.baseImages[tile.info.features[2].image]
+                    this.context.drawImage(baseImage, imageXPos, imageYPos + baseImage.height)
+                }
+                if (tile.info.features[3]) {
+                    let baseImage = this.baseImages[tile.info.features[3].image]
+                    this.context.drawImage(baseImage, imageXPos - baseImage.height, imageYPos)
+                }
+            }
         }
 
         if (!explored) {
@@ -190,17 +210,19 @@ export class MapDrawer {
     }
 
     private pixel_to_hex(x: number, y: number) {
+        let zoomLevel = this.currentZoomLevel().zoomLevel
         x -= this.currentZoomLevel().width / 2
         y -= this.currentZoomLevel().height / 2
-        let r = y / this.currentZoomLevel().zoomLevel.halfHeight
-        let q = (x - r * this.currentZoomLevel().zoomLevel.halfWidth) / this.currentZoomLevel().width
+        let r = y / zoomLevel.diagonalYOffset
+        let q = (x - r * zoomLevel.diagonalXOffset) / zoomLevel.horizontalXOffset
         let hexPosition = this.hex_round(q, r)
         return this.mapTiles.get(hexPosition[0], hexPosition[1])
     }
 
     private hex_to_pixel(tile: HexTile) {
-        let x = this.currentZoomLevel().width * tile.x + tile.y * this.currentZoomLevel().zoomLevel.halfWidth
-        let y = this.currentZoomLevel().zoomLevel.halfHeight * tile.y
+        let zoomLevel = this.currentZoomLevel().zoomLevel
+        let x = zoomLevel.horizontalXOffset * tile.x + zoomLevel.diagonalXOffset * tile.y
+        let y = zoomLevel.diagonalYOffset * tile.y
         return { 'x': Math.floor(x), 'y': Math.floor(y) }
     }
 

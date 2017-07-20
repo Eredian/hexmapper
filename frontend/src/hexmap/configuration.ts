@@ -13,9 +13,9 @@ class Configuration {
     defaultMapSize: number = 50
 
     constructor() {
-        this.zoomLevelMap.push(new ZoomLevel(7, 11, 'zoomlevel0'))
-        this.zoomLevelMap.push(new ZoomLevel(30, 53, 'zoomlevel1'))
-        this.zoomLevelMap.push(new ZoomLevel(70, 121, 'zoomlevel2'))
+        this.zoomLevelMap.push(new ZoomLevel(14, 7, 11, 'zoomlevel0'))
+        this.zoomLevelMap.push(new ZoomLevel(70, 35, 61, 'zoomlevel1'))
+        this.zoomLevelMap.push(new ZoomLevel(158, 79, 137, 'zoomlevel2'))
 
         this.favoriteImages.push('nothing')
         this.favoriteImages.push('anchor')
