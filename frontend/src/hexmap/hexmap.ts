@@ -108,7 +108,7 @@ export class HexMap {
             }
         } else if (configuration.currentTool == Tool.USE) {
             let tile = this.mapTiles.get(x, y)!
-            if (tile.explored) {
+            if (tile.explored || this.canEdit()) {
                 try {
                     new ViewTileModal(tile, this.mapDrawer, this.canEdit()).createModal()
                 } catch (e) { }

@@ -163,5 +163,6 @@ app.post('/map/:id', wrap(async (req, res) => {
 }));
 
 app.listen(config.listeningPort, config.listeningDomain, function () {
+    console.log('Listening on port ' + config.listeningPort + '.');
     console.log('App is started.');
 });
