@@ -7,7 +7,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/fontawesome-all.min.css">
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <script src="src/mousetrap.min.js"></script>
     <script src="dist/bundle.js"></script>
@@ -18,10 +18,10 @@
 <body>
     <canvas id="canvas" width="800" height="600"></canvas>
     <div id="buttons">
-        <i class="fa fa-fw fa-arrow-up fa-bigx translate-button" id="upButton"></i>
-        <i class="fa fa-fw fa-arrow-down fa-bigx translate-button" id="downButton"></i>
-        <i class="fa fa-fw fa-arrow-left fa-bigx translate-button" id="leftButton"></i>
-        <i class="fa fa-fw fa-arrow-right fa-bigx translate-button" id="rightButton"></i>
+        <i class="fas fa-fw fa-arrow-up fa-bigx translate-button" id="upButton"></i>
+        <i class="fas fa-fw fa-arrow-down fa-bigx translate-button" id="downButton"></i>
+        <i class="fas fa-fw fa-arrow-left fa-bigx translate-button" id="leftButton"></i>
+        <i class="fas fa-fw fa-arrow-right fa-bigx translate-button" id="rightButton"></i>
         <div id="selectorListView">
             <div id="selectorListToggleButton">Menu<i class="fa fa-fw fa-bars fa-bigx"></i></div>
             <ul id="selectorList">
@@ -32,16 +32,19 @@
                     Zoom Out<i class="fa fa-fw fa-search-minus fa-bigx"></i>
                 </li>
                 <li id="mapCreateButton">
-                    Create New<i class="fa fa-fw fa-file fa-bigx"></i>
+                    New<i class="fa fa-fw fa-file fa-bigx"></i>
                 </li>
                 <li id="mapSaveButton">
-                    Save<a class="fa fa-fw fa-floppy-o fa-bigx"></a>
+                    Save<a class="fas fa-fw fa-save fa-bigx"></a>
                 </li>
-                <li id="mapLoadButton">
-                    Load<i class="fa fa-fw fa-cloud-download fa-bigx"></i>
+                <li id="mapOpenButton">
+                    Open<i class="fa fa-fw fa-folder-open fa-bigx"></i>
+                </li>
+                <li id="mapReloadButton">
+                    Reload<i class="fas fa-fw fa-sync fa-bigx"></i>
                 </li>
                 <li id="logInOrOutButton">
-                    Log In/Out<i class="fa fa-fw fa-sign-in fa-bigx"></i>
+                    Log In/Out<i class="fas fa-fw fa-sign-in-alt fa-bigx"></i>
                 </li>
                 <li id="changePermissionsButton">
                     Permissions<i class="fa fa-fw fa-key fa-bigx"></i>
@@ -50,17 +53,17 @@
                     Tool<i id="currentToolButton" class="fa fa-fw fa-mouse-pointer fa-bigx"></i>
                     <ul id="selectionToolButtons" class="hidden">
                         <li><i id="useToolButton" class="fa fa-fw fa-mouse-pointer fa-bigx selected"></i></li>
-                        <li><i id="colorToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-tint"></i></i>
+                        <li><i id="colorToolButton" class="fas fa-fw fa-pencil-alt fa-bigx overlaid"><i class="fa fa-fw fa-tint"></i></i>
                         </li>
-                        <li><i id="imageToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-home"></i></i>
+                        <li><i id="imageToolButton" class="fas fa-fw fa-pencil-alt fa-bigx overlaid"><i class="fa fa-fw fa-home"></i></i>
                         </li>
-                        <li><i id="colorImageToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-home"></i>
+                        <li><i id="colorImageToolButton" class="fas fa-fw fa-pencil-alt fa-bigx overlaid"><i class="fa fa-fw fa-home"></i>
                             <i class="fa fa-fw fa-tint"></i>
                             </i>
                         </li>
-                        <li><i id="exploreToolButton" class="fa fa-fw fa-pencil fa-bigx overlaid"><i class="fa fa-fw fa-eye"></i></i>
+                        <li><i id="exploreToolButton" class="fas fa-fw fa-pencil-alt fa-bigx overlaid"><i class="fa fa-fw fa-eye"></i></i>
                         </li>
-                        <li><i id="eyedropperButton" class="fa fa-fw fa-eyedropper fa-bigx"></i></li>
+                        <li><i id="eyedropperButton" class="fas fa-fw fa-eye-dropper fa-bigx"></i></li>
                     </ul>
                 </li>
             </ul>

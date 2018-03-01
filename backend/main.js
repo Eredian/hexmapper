@@ -89,12 +89,11 @@ app.use(function (req, res, next) {
                 var decodedToken = jwt.verify(token, config.jwt.secret)
                 req.user = decodedToken.data
             } catch (error) {
-                console.log(error) //TODO invalid token
+                return next();
             }
         }
     }
     return next();
-    //return res.status(401).json({ status: 'error', code: 'unauthorized' });
 });
 
 app.get('/map', wrap(async (req, res) => {

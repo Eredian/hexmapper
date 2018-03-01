@@ -98,14 +98,14 @@ export class Server {
 
     private displayLoggedIn() {
         let button = document.querySelector('#logInOrOutButton i') !
-        button.classList.remove('fa-sign-in')
-        button.classList.add('fa-sign-out')
+        button.classList.remove('fa-sign-in-alt')
+        button.classList.add('fa-sign-out-alt')
     }
 
     private displayLoggedOut() {
         let button = document.querySelector('#logInOrOutButton i') !
-        button.classList.remove('fa-sign-out')
-        button.classList.add('fa-sign-in')
+        button.classList.remove('fa-sign-out-alt')
+        button.classList.add('fa-sign-in-alt')
     }
 
     private storeAccount() {

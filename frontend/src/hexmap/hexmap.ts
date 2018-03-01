@@ -179,12 +179,9 @@ export class HexMap {
         } catch (e) { }
     }
 
-    async load() {
+    async reload() {
         try {
-            let modal = new LoadMapModal(await this.getSavedMapNames())
-            let mapName = await modal.waitOnModal()
-
-            this.mapData = await this.server.getMap(mapName)
+            this.mapData = await this.server.getMap(this.mapName)
 
             if (!this.mapData.permissions.canEdit(currentUser)) {
                 this.toolSwitcher.switchToTool(Tool.USE)
@@ -198,6 +195,14 @@ export class HexMap {
         } catch (e) { }
     }
 
+    async open() {
+        try {
+            let modal = new LoadMapModal(await this.getSavedMapNames())
+            this.mapName = await modal.waitOnModal()
+            this.reload()
+        } catch (e) { }
+    }
+
     async changePermissions() {
         try {
             let modal = new PermissionsModal(this.mapData.permissions)
@@ -208,12 +213,14 @@ export class HexMap {
     async save() {
         try {
             let modal = new SaveAsModal()
-            let mapName = await modal.waitOnModal()
+            if (this.mapName == null) {
+                this.mapName = await modal.waitOnModal()
 
-            if (mapName == null) {
-                return
+                if (this.mapName == null) {
+                    return
+                }
             }
-            this.server.putMap(mapName, this.mapData)
+            this.server.putMap(this.mapName, this.mapData)
         } catch (e) { }
     }
 

@@ -29,7 +29,7 @@
             "runtimeExecutable": "nodemon",
             "cwd": "${workspaceRoot}/backend",
             "runtimeArgs": [
-                "--debug=5858",
+                "--inspect=5858",
                 "--harmony"
             ],
             "program": "${workspaceRoot}/backend/main.js",
@@ -37,7 +37,7 @@
             "port": 5858,
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen",
-            "protocol": "legacy",
+            "protocol": "inspector",
             "timeout": 1000000
         }
     ]

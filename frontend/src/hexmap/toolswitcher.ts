@@ -5,11 +5,11 @@ import { ToolButtonValues } from './models/toolbuttonvalues'
 
 export const toolButtonsValues = new Map<Tool, ToolButtonValues>([
     [Tool.USE, new ToolButtonValues('useToolButton', 'fa-mouse-pointer')],
-    [Tool.DRAW_IMAGE, new ToolButtonValues('imageToolButton', 'fa-pencil', ['fa-home'])],
-    [Tool.DRAW_COLOR, new ToolButtonValues('colorToolButton', 'fa-pencil', ['fa-tint'])],
-    [Tool.DRAW_IMAGE_COLOR, new ToolButtonValues('colorImageToolButton', 'fa-pencil', ['fa-tint', 'fa-home'])],
-    [Tool.EXPLORE, new ToolButtonValues('exploreToolButton', 'fa-pencil', ['fa-eye'])],
-    [Tool.EYEDROPPER, new ToolButtonValues('eyedropperButton', 'fa-eyedropper')]])
+    [Tool.DRAW_IMAGE, new ToolButtonValues('imageToolButton', 'fa-pencil-alt', ['fa-home'])],
+    [Tool.DRAW_COLOR, new ToolButtonValues('colorToolButton', 'fa-pencil-alt', ['fa-tint'])],
+    [Tool.DRAW_IMAGE_COLOR, new ToolButtonValues('colorImageToolButton', 'fa-pencil-alt', ['fa-tint', 'fa-home'])],
+    [Tool.EXPLORE, new ToolButtonValues('exploreToolButton', 'fa-pencil-alt', ['fa-eye'])],
+    [Tool.EYEDROPPER, new ToolButtonValues('eyedropperButton', 'fa-eye-dropper')]])
 
 const template = doT.template(
     `<i id="currentToolButton" class="fa fa-fw {{=it.mainClass}} fa-bigx selected overlaid">
