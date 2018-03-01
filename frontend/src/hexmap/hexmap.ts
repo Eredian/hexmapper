@@ -356,7 +356,10 @@ export class HexMap {
         this.mapTiles.removeRow(bottom)
     }
 
-    resize(width: number, height: number, redraw: boolean) {
+    resize(redraw: boolean) {
+        let width = window.innerWidth
+        let height = window.innerHeight
+
         this.canvas.width = width
         this.canvas.height = height
         if (redraw) {

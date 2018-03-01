@@ -53,11 +53,11 @@ window.onload = function () {
     map = new HexMap();
     (<any>window).map = map
     map.generateNewDefaultMap()
-    map.resize(window.innerWidth, window.innerHeight, false)
+    map.resize(false)
 
     new EventHandler(map)
 
-    window.addEventListener('resize', () => map.resize(window.innerWidth, window.innerHeight, true), false)
+    window.addEventListener('resize', () => setTimeout(() => map.resize(true), 500), false)
 
     map.generateNewDefaultMap()
     map.drawMap()
